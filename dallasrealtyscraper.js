@@ -44,63 +44,207 @@ async function delay(ms) {
 async function extractEmailFromWebsite(page, websiteUrl) {
   if (!websiteUrl) return null;
 
-  try {
-    console.log(`    Checking website for email: ${websiteUrl}`);
+  // Contact page paths to try in order
+  const contactPaths = ['', '/contact', '/contact-us', '/get-in-touch', '/about', '/about-us'];
+  const maxRetries = 2;
 
-    // Navigate to the website
-    await page.goto(websiteUrl, {
-      waitUntil: 'domcontentloaded',
-      timeout: 15000
-    });
-    await randomDelay(2000, 4000);
+  // Helper function to extract email from current page with improved detection
+  const extractEmailFromCurrentPage = async (pageName) => {
+    try {
+      // Scroll to bottom to load lazy content and access footer sections
+      await page.evaluate(() => {
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+      console.log(`      Scrolled to footer on ${pageName}`);
 
-    // Extract email from website
-    const websiteEmail = await page.evaluate(() => {
-      const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi;
+      // Wait for lazy-loaded content to render
+      await randomDelay(2000, 3000);
 
-      // Check for mailto links first
-      const mailtoLinks = document.querySelectorAll('a[href^="mailto:"]');
-      if (mailtoLinks.length > 0) {
-        const email = mailtoLinks[0].getAttribute('href').replace('mailto:', '').split('?')[0].trim();
-        return email;
-      }
+      // Extract email with comprehensive selectors
+      const email = await page.evaluate(() => {
+        const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi;
 
-      // Check contact page links
-      const contactLinks = document.querySelectorAll('a[href*="contact"], a[href*="Contact"]');
-      for (const link of contactLinks) {
-        const text = link.innerText || '';
-        const emailMatch = text.match(emailRegex);
-        if (emailMatch) return emailMatch[0];
-      }
+        // Priority 1: Check mailto links (most reliable)
+        const mailtoLinks = document.querySelectorAll('a[href^="mailto:"]');
+        if (mailtoLinks.length > 0) {
+          const email = mailtoLinks[0].getAttribute('href').replace('mailto:', '').split('?')[0].trim();
+          return { email, source: 'mailto link' };
+        }
 
-      // Check entire page content
-      const bodyText = document.body.innerText || document.body.textContent || '';
-      const emailMatches = bodyText.match(emailRegex);
+        // Priority 2: Check footer sections specifically (MOST COMMON location)
+        const footerSections = document.querySelectorAll('footer, [class*="footer" i], [id*="footer" i]');
+        for (const footer of footerSections) {
+          // Check for mailto in footer
+          const footerMailto = footer.querySelector('a[href^="mailto:"]');
+          if (footerMailto) {
+            const email = footerMailto.getAttribute('href').replace('mailto:', '').split('?')[0].trim();
+            return { email, source: 'footer mailto' };
+          }
 
-      if (emailMatches && emailMatches.length > 0) {
-        // Filter out common false positives
-        const validEmails = emailMatches.filter(e =>
-          !e.includes('example.com') &&
-          !e.includes('test.com') &&
-          !e.includes('sentry.') &&
-          !e.includes('noreply') &&
-          !e.includes('wixpress.') &&
-          !e.includes('placeholder')
-        );
+          // Check footer text content
+          const footerText = footer.innerText || footer.textContent || '';
+          const footerMatch = footerText.match(emailRegex);
+          if (footerMatch) {
+            const validEmail = footerMatch.find(e =>
+              !e.includes('example.com') &&
+              !e.includes('test.com') &&
+              !e.includes('sentry.') &&
+              !e.includes('noreply') &&
+              !e.includes('wixpress.') &&
+              !e.includes('placeholder')
+            );
+            if (validEmail) return { email: validEmail, source: 'footer text' };
+          }
 
-        if (validEmails.length > 0) {
-          return validEmails[0];
+          // Check aria-label in footer elements
+          const footerElements = footer.querySelectorAll('[aria-label*="@"], [aria-label*="email" i], [aria-label*="mail" i]');
+          for (const el of footerElements) {
+            const ariaLabel = el.getAttribute('aria-label');
+            const ariaMatch = ariaLabel.match(emailRegex);
+            if (ariaMatch) {
+              return { email: ariaMatch[0], source: 'footer aria-label' };
+            }
+          }
+        }
+
+        // Priority 3: Check header/nav sections
+        const headerSections = document.querySelectorAll('header, nav, [class*="header" i], [class*="nav" i], [id*="header" i], [id*="nav" i]');
+        for (const header of headerSections) {
+          const headerMailto = header.querySelector('a[href^="mailto:"]');
+          if (headerMailto) {
+            const email = headerMailto.getAttribute('href').replace('mailto:', '').split('?')[0].trim();
+            return { email, source: 'header mailto' };
+          }
+
+          const headerText = header.innerText || header.textContent || '';
+          const headerMatch = headerText.match(emailRegex);
+          if (headerMatch) {
+            const validEmail = headerMatch.find(e =>
+              !e.includes('example.com') &&
+              !e.includes('test.com') &&
+              !e.includes('sentry.') &&
+              !e.includes('noreply') &&
+              !e.includes('wixpress.') &&
+              !e.includes('placeholder')
+            );
+            if (validEmail) return { email: validEmail, source: 'header text' };
+          }
+        }
+
+        // Priority 4: Check data attributes
+        const elementsWithData = document.querySelectorAll('[data-email], [data-mail]');
+        for (const el of elementsWithData) {
+          const dataEmail = el.getAttribute('data-email') || el.getAttribute('data-mail');
+          if (dataEmail && emailRegex.test(dataEmail)) {
+            return { email: dataEmail, source: 'data attribute' };
+          }
+        }
+
+        // Priority 5: Check aria-label attributes across the page
+        const elementsWithAria = document.querySelectorAll('[aria-label]');
+        for (const el of elementsWithAria) {
+          const ariaLabel = el.getAttribute('aria-label');
+          const ariaMatch = ariaLabel.match(emailRegex);
+          if (ariaMatch) {
+            return { email: ariaMatch[0], source: 'aria-label' };
+          }
+        }
+
+        // Priority 6: Check buttons with "contact", "talk", "connect" text
+        const contactButtons = document.querySelectorAll('button, a, [role="button"]');
+        for (const btn of contactButtons) {
+          const text = (btn.innerText || '').toLowerCase();
+          if (text.includes('contact') || text.includes('talk') || text.includes('connect') || text.includes('email')) {
+            const btnText = btn.innerText || btn.textContent || '';
+            const btnMatch = btnText.match(emailRegex);
+            if (btnMatch) {
+              const validEmail = btnMatch.find(e =>
+                !e.includes('example.com') &&
+                !e.includes('test.com') &&
+                !e.includes('sentry.') &&
+                !e.includes('noreply') &&
+                !e.includes('wixpress.') &&
+                !e.includes('placeholder')
+              );
+              if (validEmail) return { email: validEmail, source: 'contact button' };
+            }
+          }
+        }
+
+        // Priority 7: Check entire page content as last resort
+        const bodyText = document.body.innerText || document.body.textContent || '';
+        const emailMatches = bodyText.match(emailRegex);
+
+        if (emailMatches && emailMatches.length > 0) {
+          const validEmails = emailMatches.filter(e =>
+            !e.includes('example.com') &&
+            !e.includes('test.com') &&
+            !e.includes('sentry.') &&
+            !e.includes('noreply') &&
+            !e.includes('wixpress.') &&
+            !e.includes('placeholder')
+          );
+
+          if (validEmails.length > 0) {
+            return { email: validEmails[0], source: 'page body' };
+          }
+        }
+
+        return null;
+      });
+
+      return email;
+    } catch (error) {
+      console.log(`      Error extracting from ${pageName}: ${error.message}`);
+      return null;
+    }
+  };
+
+  // Try each contact path in order
+  for (const path of contactPaths) {
+    const url = websiteUrl + path;
+    const pageName = path === '' ? 'homepage' : path;
+
+    // Retry logic for network failures
+    for (let retry = 0; retry < maxRetries; retry++) {
+      try {
+        console.log(`    Attempting: ${url}${retry > 0 ? ` (retry ${retry + 1}/${maxRetries})` : ''}`);
+
+        // Navigate to the page with increased timeout
+        await page.goto(url, {
+          waitUntil: 'domcontentloaded',
+          timeout: 25000
+        });
+        await randomDelay(2000, 3000);
+
+        // Try to extract email from this page
+        const result = await extractEmailFromCurrentPage(pageName);
+
+        if (result && result.email) {
+          console.log(`    ✓ FOUND EMAIL: ${result.email} (from ${pageName} - ${result.source})`);
+          return result.email;
+        } else {
+          console.log(`      No email found on ${pageName}`);
+        }
+
+        // If successful navigation, don't retry this page
+        break;
+      } catch (error) {
+        if (retry < maxRetries - 1) {
+          console.log(`      Failed to load ${pageName}, retrying...`);
+          await randomDelay(1000, 2000);
+        } else {
+          console.log(`      Could not access ${pageName}: ${error.message}`);
         }
       }
+    }
 
-      return null;
-    });
-
-    return websiteEmail;
-  } catch (error) {
-    console.log(`    Could not extract email from website: ${error.message}`);
-    return null;
+    // If we found an email on any page, return it immediately
+    // (This is handled by the return statement above, but adding check for clarity)
   }
+
+  console.log(`    ✗ No email found after checking all pages`);
+  return null;
 }
 
 // Enhanced scrolling function to load more businesses
