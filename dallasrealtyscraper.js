@@ -11,7 +11,7 @@ puppeteer.use(StealthPlugin());
 // Configure your search parameters
 const locations = [
   'Dallas, Usa',
-  'Houston, Usa',
+  
   // Add more locations as needed
 ];
 
