@@ -417,32 +417,72 @@ async function scrapeGoogleMaps() {
       console.log(`========================================`);
 
       try {
+        console.log('Loading Google Maps...');
         await page.goto('https://www.google.com/maps', {
           waitUntil: 'domcontentloaded',
           timeout: 60000
         });
-        await randomDelay(3000, 5000);
+        console.log('✓ Google Maps loaded');
+        await randomDelay(4000, 6000);
 
+        console.log('Finding search box...');
         // Clear search box and search
-        const searchBox = await page.waitForSelector('#searchboxinput', { timeout: 10000 });
+        const searchBox = await page.waitForSelector('#searchboxinput', { timeout: 15000 });
         await searchBox.click({ clickCount: 3 });
         await randomDelay(500, 1000);
 
+        console.log(`Typing search query: ${searchQuery}`);
         // Type with random delays between keystrokes (more human-like)
         await searchBox.type(searchQuery, { delay: Math.floor(Math.random() * 100) + 50 });
         await randomDelay(1000, 2000);
+
+        console.log('Pressing Enter to search...');
         await page.keyboard.press('Enter');
 
         console.log('Waiting for results to load...');
-        await randomDelay(8000, 10000);
+        await randomDelay(5000, 7000);
 
-        // Wait for the results panel
-        try {
-          await page.waitForSelector('div[role="feed"]', { timeout: 15000 });
-          console.log('Results panel loaded');
-        } catch (e) {
-          console.log('No results panel found, skipping...');
-          continue;
+        // Wait for the results panel - try multiple selectors
+        let resultsFound = false;
+        const selectors = [
+          'div[role="feed"]',
+          'div.m6QErb.DxyBCb.kA9KIf.dS8AEf',
+          'div[class*="feed"]',
+          'div.m6QErb'
+        ];
+
+        for (const selector of selectors) {
+          try {
+            console.log(`Trying selector: ${selector}`);
+            await page.waitForSelector(selector, { timeout: 20000 });
+            console.log(`✓ Results panel found with selector: ${selector}`);
+            resultsFound = true;
+            break;
+          } catch (e) {
+            console.log(`✗ Selector ${selector} not found, trying next...`);
+          }
+        }
+
+        if (!resultsFound) {
+          console.log('⚠️  No results panel found with any selector');
+          console.log('Waiting 10 more seconds to see if content loads...');
+          await randomDelay(10000, 12000);
+
+          // One more attempt
+          try {
+            await page.waitForSelector('div[role="feed"]', { timeout: 10000 });
+            console.log('✓ Results panel loaded after extended wait');
+            resultsFound = true;
+          } catch (e) {
+            console.log('✗ Still no results panel found after extended wait');
+
+            // Take a screenshot for debugging
+            await page.screenshot({ path: 'debug_no_results.png' });
+            console.log('📸 Screenshot saved to debug_no_results.png');
+
+            console.log('Skipping to next search...');
+            continue;
+          }
         }
 
         // Progressive scrolling to load more businesses (up to MAX_LEADS)
@@ -736,6 +776,13 @@ async function scrapeGoogleMaps() {
 
       } catch (error) {
         console.error(`Error searching ${searchQuery}:`, error.message);
+        console.log('Taking error screenshot for debugging...');
+        try {
+          await page.screenshot({ path: `error_${Date.now()}.png` });
+          console.log('📸 Error screenshot saved');
+        } catch (screenshotError) {
+          console.log('Could not save screenshot');
+        }
       }
     }
 
@@ -745,6 +792,8 @@ async function scrapeGoogleMaps() {
     }
   }
 
+  console.log('\n🏁 Scraping completed! Closing browser...');
+  await randomDelay(2000, 3000);
   await browser.close();
   saveToCsv();
 }
