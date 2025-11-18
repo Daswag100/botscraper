@@ -1,0 +1,651 @@
+// Enhanced Google Maps Scraper with Stealth Mode & Graceful Exit
+// Features: Progressive scrolling, Ctrl+C handling, anti-bot detection
+
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const fs = require('fs');
+
+// Add stealth plugin to avoid detection
+puppeteer.use(StealthPlugin());
+
+// Configure your search parameters
+const locations = [
+  'Dallas, Usa',
+  // Add more locations as needed
+];
+
+const businessTypes = ['real estate'];
+
+const results = [];
+let isGracefulShutdown = false;
+
+// Maximum number of leads to scrape
+const MAX_LEADS = 100;
+
+// Handle Ctrl+C gracefully - save data before exiting
+process.on('SIGINT', async () => {
+  console.log('\n\n⚠️  Ctrl+C detected! Saving data before exit...\n');
+  isGracefulShutdown = true;
+  saveToCsv();
+  console.log('\n✅ Data saved successfully. Exiting...\n');
+  process.exit(0);
+});
+
+// Random delay function for more human-like behavior
+async function randomDelay(min = 1000, max = 3000) {
+  const delay = Math.floor(Math.random() * (max - min + 1)) + min;
+  return new Promise(resolve => setTimeout(resolve, delay));
+}
+
+async function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function extractEmailFromWebsite(page, websiteUrl) {
+  if (!websiteUrl) return null;
+
+  try {
+    console.log(`    Checking website for email: ${websiteUrl}`);
+
+    // Navigate to the website
+    await page.goto(websiteUrl, {
+      waitUntil: 'domcontentloaded',
+      timeout: 15000
+    });
+    await randomDelay(2000, 4000);
+
+    // Extract email from website
+    const websiteEmail = await page.evaluate(() => {
+      const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi;
+
+      // Check for mailto links first
+      const mailtoLinks = document.querySelectorAll('a[href^="mailto:"]');
+      if (mailtoLinks.length > 0) {
+        const email = mailtoLinks[0].getAttribute('href').replace('mailto:', '').split('?')[0].trim();
+        return email;
+      }
+
+      // Check contact page links
+      const contactLinks = document.querySelectorAll('a[href*="contact"], a[href*="Contact"]');
+      for (const link of contactLinks) {
+        const text = link.innerText || '';
+        const emailMatch = text.match(emailRegex);
+        if (emailMatch) return emailMatch[0];
+      }
+
+      // Check entire page content
+      const bodyText = document.body.innerText || document.body.textContent || '';
+      const emailMatches = bodyText.match(emailRegex);
+
+      if (emailMatches && emailMatches.length > 0) {
+        // Filter out common false positives
+        const validEmails = emailMatches.filter(e =>
+          !e.includes('example.com') &&
+          !e.includes('test.com') &&
+          !e.includes('sentry.') &&
+          !e.includes('noreply') &&
+          !e.includes('wixpress.') &&
+          !e.includes('placeholder')
+        );
+
+        if (validEmails.length > 0) {
+          return validEmails[0];
+        }
+      }
+
+      return null;
+    });
+
+    return websiteEmail;
+  } catch (error) {
+    console.log(`    Could not extract email from website: ${error.message}`);
+    return null;
+  }
+}
+
+// Enhanced scrolling function to load more businesses
+async function progressiveScroll(page, targetBusinesses = 100) {
+  console.log(`\n📜 Progressive scrolling to load up to ${targetBusinesses} businesses...`);
+
+  let previousCount = 0;
+  let currentCount = 0;
+  let scrollAttempts = 0;
+  const maxScrollAttempts = 30; // Increased for more results
+  let noNewResultsCount = 0;
+
+  while (scrollAttempts < maxScrollAttempts && noNewResultsCount < 3) {
+    // Check if Ctrl+C was pressed
+    if (isGracefulShutdown) {
+      console.log('⚠️  Stopping scroll due to graceful shutdown...');
+      break;
+    }
+
+    scrollAttempts++;
+
+    // Scroll the results panel
+    await page.evaluate(() => {
+      const feedDiv = document.querySelector('div[role="feed"]');
+      if (feedDiv) {
+        feedDiv.scrollBy(0, 800);
+      }
+    });
+
+    // Wait for new content to load (random delay for human-like behavior)
+    await randomDelay(2000, 4000);
+
+    // Count current businesses
+    currentCount = await page.evaluate(() => {
+      const feedDiv = document.querySelector('div[role="feed"]');
+      if (!feedDiv) return 0;
+      const links = feedDiv.querySelectorAll('a[href*="/maps/place/"]');
+      return links.length;
+    });
+
+    console.log(`Scroll ${scrollAttempts}: Found ${currentCount} businesses (target: ${targetBusinesses})`);
+
+    // Check if we got new results
+    if (currentCount === previousCount) {
+      noNewResultsCount++;
+      console.log(`⚠️  No new results (${noNewResultsCount}/3)`);
+
+      // Try scrolling to the end to trigger more loading
+      await page.evaluate(() => {
+        const feedDiv = document.querySelector('div[role="feed"]');
+        if (feedDiv) {
+          feedDiv.scrollTop = feedDiv.scrollHeight;
+        }
+      });
+      await randomDelay(3000, 5000);
+    } else {
+      noNewResultsCount = 0; // Reset counter if we found new results
+    }
+
+    previousCount = currentCount;
+
+    // Stop if we have enough businesses
+    if (currentCount >= targetBusinesses) {
+      console.log(`✅ Reached target of ${targetBusinesses} businesses!`);
+      break;
+    }
+  }
+
+  console.log(`\n✅ Scrolling complete! Found ${currentCount} total businesses\n`);
+  return currentCount;
+}
+
+async function scrapeGoogleMaps() {
+  // Launch browser with stealth mode and anti-detection settings
+  const browser = await puppeteer.launch({
+    headless: false,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-blink-features=AutomationControlled',
+      '--disable-dev-shm-usage',
+      '--disable-web-security',
+      '--disable-features=IsolateOrigins,site-per-process',
+      '--window-size=1920,1080',
+      // Additional anti-detection args
+      '--disable-infobars',
+      '--disable-extensions',
+      '--disable-gpu',
+      '--disable-accelerated-2d-canvas',
+      '--disable-accelerated-jpeg-decoding',
+      '--disable-accelerated-mjpeg-decode',
+      '--disable-app-list-dismiss-on-blur',
+      '--disable-accelerated-video-decode',
+    ]
+  });
+
+  const page = await browser.newPage();
+
+  // Set viewport
+  await page.setViewport({
+    width: 1920,
+    height: 1080,
+    deviceScaleFactor: 1
+  });
+
+  // Set realistic user agent
+  await page.setUserAgent(
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+  );
+
+  // Set additional headers to appear more human
+  await page.setExtraHTTPHeaders({
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept-Encoding': 'gzip, deflate, br',
+  });
+
+  // Override navigator properties to avoid detection
+  await page.evaluateOnNewDocument(() => {
+    // Remove webdriver flag
+    Object.defineProperty(navigator, 'webdriver', {
+      get: () => false,
+    });
+
+    // Mock plugins
+    Object.defineProperty(navigator, 'plugins', {
+      get: () => [1, 2, 3, 4, 5],
+    });
+
+    // Mock languages
+    Object.defineProperty(navigator, 'languages', {
+      get: () => ['en-US', 'en'],
+    });
+
+    // Add chrome object
+    window.chrome = {
+      runtime: {},
+    };
+
+    // Mock permissions
+    const originalQuery = window.navigator.permissions.query;
+    window.navigator.permissions.query = (parameters) => (
+      parameters.name === 'notifications' ?
+        Promise.resolve({ state: Notification.permission }) :
+        originalQuery(parameters)
+    );
+  });
+
+  for (const location of locations) {
+    for (const businessType of businessTypes) {
+      // Check if we've reached the maximum number of leads
+      if (results.length >= MAX_LEADS) {
+        console.log(`\n🎯 Reached maximum of ${MAX_LEADS} leads! Stopping...`);
+        await browser.close();
+        saveToCsv();
+        return;
+      }
+
+      // Check if Ctrl+C was pressed
+      if (isGracefulShutdown) {
+        console.log('⚠️  Graceful shutdown in progress...');
+        break;
+      }
+
+      const searchQuery = `${businessType} in ${location}`;
+      console.log(`\n========================================`);
+      console.log(`Searching: ${searchQuery}`);
+      console.log(`Progress: ${results.length}/${MAX_LEADS} leads`);
+      console.log(`========================================`);
+
+      try {
+        await page.goto('https://www.google.com/maps', {
+          waitUntil: 'domcontentloaded',
+          timeout: 60000
+        });
+        await randomDelay(3000, 5000);
+
+        // Clear search box and search
+        const searchBox = await page.waitForSelector('#searchboxinput', { timeout: 10000 });
+        await searchBox.click({ clickCount: 3 });
+        await randomDelay(500, 1000);
+
+        // Type with random delays between keystrokes (more human-like)
+        await searchBox.type(searchQuery, { delay: Math.floor(Math.random() * 100) + 50 });
+        await randomDelay(1000, 2000);
+        await page.keyboard.press('Enter');
+
+        console.log('Waiting for results to load...');
+        await randomDelay(8000, 10000);
+
+        // Wait for the results panel
+        try {
+          await page.waitForSelector('div[role="feed"]', { timeout: 15000 });
+          console.log('Results panel loaded');
+        } catch (e) {
+          console.log('No results panel found, skipping...');
+          continue;
+        }
+
+        // Progressive scrolling to load more businesses (up to MAX_LEADS)
+        const remainingLeads = MAX_LEADS - results.length;
+        await progressiveScroll(page, Math.min(remainingLeads, 100));
+
+        // Get all business link elements
+        const businesses = await page.evaluate(() => {
+          const links = [];
+          const feedDiv = document.querySelector('div[role="feed"]');
+          if (!feedDiv) return [];
+
+          const allLinks = feedDiv.querySelectorAll('a[href*="/maps/place/"]');
+          allLinks.forEach((link, index) => {
+            const href = link.getAttribute('href');
+            if (href && href.includes('/maps/place/')) {
+              links.push({ href, index });
+            }
+          });
+
+          return links;
+        });
+
+        console.log(`Found ${businesses.length} business links`);
+
+        if (businesses.length === 0) {
+          console.log('No businesses found, moving to next search');
+          continue;
+        }
+
+        // Visit each business page directly
+        const uniqueBusinesses = [...new Map(businesses.map(b => [b.href, b])).values()];
+
+        // Limit to remaining leads or all found businesses, whichever is smaller
+        const businessesToScrape = Math.min(uniqueBusinesses.length, MAX_LEADS - results.length);
+
+        for (let i = 0; i < businessesToScrape; i++) {
+          // Check if Ctrl+C was pressed
+          if (isGracefulShutdown) {
+            console.log('⚠️  Graceful shutdown in progress...');
+            break;
+          }
+
+          try {
+            const businessUrl = uniqueBusinesses[i].href;
+
+            // Convert relative URL to absolute if needed
+            const fullUrl = businessUrl.startsWith('http')
+              ? businessUrl
+              : `https://www.google.com${businessUrl}`;
+
+            console.log(`\nChecking business ${i + 1}/${businessesToScrape}...`);
+
+            // Navigate directly to the business page
+            await page.goto(fullUrl, {
+              waitUntil: 'domcontentloaded',
+              timeout: 30000
+            });
+            await randomDelay(4000, 6000); // Random delay for human-like behavior
+
+            // Extract business details
+            const details = await page.evaluate(() => {
+              const data = {};
+
+              // Get business name - try multiple selectors
+              let name = null;
+              const nameSelectors = [
+                'h1.DUwDvf',
+                'h1.fontHeadlineLarge',
+                'h1[class*="fontHeadline"]',
+                'div[class*="fontHeadline"]'
+              ];
+
+              for (const selector of nameSelectors) {
+                const nameEl = document.querySelector(selector);
+                if (nameEl && nameEl.innerText) {
+                  name = nameEl.innerText.trim();
+                  break;
+                }
+              }
+              data.name = name;
+
+              // Get phone number - multiple approaches
+              let phone = null;
+
+              // Method 1: Look for phone button
+              const phoneButtons = document.querySelectorAll('button[data-item-id^="phone"]');
+              if (phoneButtons.length > 0) {
+                const ariaLabel = phoneButtons[0].getAttribute('aria-label');
+                if (ariaLabel) {
+                  phone = ariaLabel.replace('Phone:', '').replace('Copy phone number', '').trim();
+                }
+              }
+
+              // Method 2: Look for phone in text
+              if (!phone) {
+                const allButtons = document.querySelectorAll('button');
+                for (const btn of allButtons) {
+                  const text = btn.innerText;
+                  const phoneRegex = /(\+?\d{1,4}[\s-]?)?\(?\d{3,4}\)?[\s-]?\d{3,4}[\s-]?\d{3,4}/;
+                  if (phoneRegex.test(text)) {
+                    phone = text.trim();
+                    break;
+                  }
+                }
+              }
+
+              data.phone = phone;
+
+              // Get address
+              const addressButton = document.querySelector('button[data-item-id="address"]');
+              if (addressButton) {
+                const ariaLabel = addressButton.getAttribute('aria-label');
+                data.address = ariaLabel ? ariaLabel.replace('Address: ', '').trim() : null;
+              } else {
+                data.address = null;
+              }
+
+              // Get rating
+              const ratingSelectors = [
+                'div.F7nice span[aria-hidden="true"]',
+                'span[aria-label*="stars"]',
+                'div[jsaction*="rating"]'
+              ];
+
+              for (const selector of ratingSelectors) {
+                const ratingEl = document.querySelector(selector);
+                if (ratingEl && ratingEl.innerText) {
+                  data.rating = ratingEl.innerText.trim();
+                  break;
+                }
+              }
+
+              // Get reviews count
+              const reviewsEl = document.querySelector('div.F7nice span[aria-label]');
+              if (reviewsEl) {
+                const ariaLabel = reviewsEl.getAttribute('aria-label');
+                data.reviews = ariaLabel;
+              } else {
+                data.reviews = null;
+              }
+
+              // Extract website URL
+              let websiteUrl = null;
+
+              // Method 1: Check for website button/link with data-item-id
+              const websiteButton = document.querySelector('a[data-item-id="authority"]');
+              if (websiteButton) {
+                websiteUrl = websiteButton.getAttribute('href');
+              }
+
+              // Method 2: Look for "Website" text in links
+              if (!websiteUrl) {
+                const allLinks = document.querySelectorAll('a');
+                for (const link of allLinks) {
+                  const ariaLabel = link.getAttribute('aria-label');
+                  const text = link.innerText;
+                  if ((ariaLabel && ariaLabel.toLowerCase().includes('website')) ||
+                      (text && text.toLowerCase().trim() === 'website')) {
+                    websiteUrl = link.getAttribute('href');
+                    break;
+                  }
+                }
+              }
+
+              // Method 3: Check for external links (not google/maps)
+              if (!websiteUrl) {
+                const allLinks = document.querySelectorAll('a[href^="http"]');
+                for (const link of allLinks) {
+                  const href = link.getAttribute('href');
+                  if (href &&
+                      !href.includes('google.com') &&
+                      !href.includes('maps.google') &&
+                      !href.includes('goo.gl') &&
+                      !href.includes('accounts.google')) {
+                    websiteUrl = href;
+                    break;
+                  }
+                }
+              }
+
+              data.website = websiteUrl;
+
+              // Extract email from the page content
+              let email = null;
+              const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi;
+
+              // Method 1: Check buttons and links for emails
+              const allElements = document.querySelectorAll('button, a, span, div');
+              for (const el of allElements) {
+                const text = el.innerText || el.textContent || '';
+                const href = el.getAttribute('href') || '';
+
+                // Check for mailto links
+                if (href.startsWith('mailto:')) {
+                  email = href.replace('mailto:', '').split('?')[0].trim();
+                  break;
+                }
+
+                // Check text content for email
+                const emailMatch = text.match(emailRegex);
+                if (emailMatch && emailMatch[0]) {
+                  email = emailMatch[0];
+                  break;
+                }
+              }
+
+              // Method 2: Check entire page content
+              if (!email) {
+                const bodyText = document.body.innerText || document.body.textContent || '';
+                const emailMatches = bodyText.match(emailRegex);
+                if (emailMatches && emailMatches[0]) {
+                  // Filter out common false positives
+                  const validEmails = emailMatches.filter(e =>
+                    !e.includes('example.com') &&
+                    !e.includes('test.com') &&
+                    !e.includes('sentry.') &&
+                    !e.includes('noreply')
+                  );
+                  if (validEmails.length > 0) {
+                    email = validEmails[0];
+                  }
+                }
+              }
+
+              data.email = email;
+
+              return data;
+            });
+
+            // Get the current URL (Google Maps link)
+            const googleMapsLink = page.url();
+
+            // Save business data
+            if (details.name) {
+              // If website found but no email, try to extract email from website
+              let finalEmail = details.email;
+              if (details.website && !finalEmail) {
+                finalEmail = await extractEmailFromWebsite(page, details.website);
+              }
+
+              const businessData = {
+                businessName: details.name,
+                phoneNumber: details.phone || 'N/A',
+                address: details.address || 'N/A',
+                rating: details.rating || 'N/A',
+                reviews: details.reviews || 'N/A',
+                website: details.website || 'N/A',
+                email: finalEmail || 'N/A',
+                googleMapsLink: googleMapsLink,
+                businessType: businessType,
+                location: location
+              };
+
+              results.push(businessData);
+              console.log(`✓ SAVED: ${details.name}`);
+              console.log(`  Phone: ${details.phone || 'N/A'}`);
+              console.log(`  Website: ${details.website || 'N/A'}`);
+              console.log(`  Email: ${finalEmail || 'N/A'}`);
+
+              // Auto-save progress every 10 businesses
+              if (results.length % 10 === 0) {
+                console.log(`\n📊 Progress checkpoint: ${results.length}/${MAX_LEADS} leads saved`);
+                saveToCsv(true); // Save without final message
+              }
+
+              // Check if we've reached the maximum
+              if (results.length >= MAX_LEADS) {
+                console.log(`\n🎯 Reached maximum of ${MAX_LEADS} leads!`);
+                break;
+              }
+            } else {
+              console.log('✗ Could not extract business name');
+            }
+
+            // Random delay before next business (human-like behavior)
+            await randomDelay(2000, 4000);
+
+          } catch (error) {
+            console.log(`Error scraping business ${i + 1}:`, error.message);
+          }
+        }
+
+        console.log(`\nCompleted ${location} - ${businessType}`);
+        console.log(`Total scraped so far: ${results.length}/${MAX_LEADS}`);
+
+        // Break if we've reached the maximum
+        if (results.length >= MAX_LEADS) {
+          break;
+        }
+
+      } catch (error) {
+        console.error(`Error searching ${searchQuery}:`, error.message);
+      }
+    }
+
+    // Break outer loop if we've reached the maximum
+    if (results.length >= MAX_LEADS) {
+      break;
+    }
+  }
+
+  await browser.close();
+  saveToCsv();
+}
+
+function saveToCsv(isCheckpoint = false) {
+  if (results.length === 0) {
+    console.log('\n⚠️  No businesses were found!');
+    return;
+  }
+
+  const csvHeader = 'Business Name,Phone Number,Address,Rating,Reviews,Website,Email,Google Maps Link,Business Type,Location\n';
+  const csvRows = results.map(r =>
+    `"${r.businessName.replace(/"/g, '""')}","${r.phoneNumber}","${r.address.replace(/"/g, '""')}","${r.rating}","${r.reviews}","${r.website}","${r.email}","${r.googleMapsLink}","${r.businessType}","${r.location}"`
+  ).join('\n');
+
+  const csv = csvHeader + csvRows;
+  const filename = `dallas_realty_businesses_${Date.now()}.csv`;
+
+  fs.writeFileSync(filename, csv);
+
+  // Calculate statistics
+  const withWebsite = results.filter(r => r.website !== 'N/A').length;
+  const withEmail = results.filter(r => r.email !== 'N/A').length;
+
+  if (!isCheckpoint) {
+    console.log(`\n========================================`);
+    console.log(`✓ SUCCESS! Saved ${results.length} businesses to ${filename}`);
+    console.log(`  📊 Businesses with websites: ${withWebsite}`);
+    console.log(`  📧 Businesses with emails: ${withEmail}`);
+    console.log(`========================================`);
+  }
+}
+
+// Start scraping
+console.log(`
+╔═══════════════════════════════════════════════════════════╗
+║  🚀 Enhanced Google Maps Scraper with Stealth Mode       ║
+║                                                           ║
+║  ✅ Puppeteer Stealth Plugin Active                      ║
+║  ✅ Anti-Detection Measures Enabled                      ║
+║  ✅ Progressive Scrolling (Up to ${MAX_LEADS} leads)            ║
+║  ✅ Ctrl+C Graceful Shutdown (Saves data before exit)    ║
+║  ✅ Auto-checkpoint every 10 businesses                  ║
+║                                                           ║
+║  Press Ctrl+C anytime to stop and save current progress  ║
+╚═══════════════════════════════════════════════════════════╝
+`);
+
+scrapeGoogleMaps().catch(console.error);
