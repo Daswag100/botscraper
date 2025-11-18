@@ -390,9 +390,59 @@ class ServiceBusinessLeadScraper {
     return analysis;
   }
 
+  // Scroll the results panel to load more businesses
+  async scrollResultsPanel() {
+    try {
+      const scrolled = await this.page.evaluate(() => {
+        // Find the scrollable results panel
+        const selectors = [
+          'div[role="feed"]',
+          'div[tabindex="-1"]',
+          'div.m6QErb',
+          'div[aria-label*="Results"]',
+          '[class*="section-layout"]'
+        ];
+
+        let scrollableElement = null;
+        for (const selector of selectors) {
+          const element = document.querySelector(selector);
+          if (element && element.scrollHeight > element.clientHeight) {
+            scrollableElement = element;
+            break;
+          }
+        }
+
+        if (!scrollableElement) {
+          // Try to find any scrollable div
+          const allDivs = document.querySelectorAll('div');
+          for (const div of allDivs) {
+            if (div.scrollHeight > div.clientHeight && div.clientHeight > 400) {
+              scrollableElement = div;
+              break;
+            }
+          }
+        }
+
+        if (scrollableElement) {
+          const beforeScroll = scrollableElement.scrollTop;
+          scrollableElement.scrollTop = scrollableElement.scrollHeight;
+          const afterScroll = scrollableElement.scrollTop;
+          return afterScroll > beforeScroll;
+        }
+
+        return false;
+      });
+
+      return scrolled;
+    } catch (error) {
+      console.log(`   ⚠️  Error scrolling: ${error.message}`);
+      return false;
+    }
+  }
+
   async findBusinessElements() {
     const analysis = await this.analyzePageStructure();
-    
+
     const selectorCandidates = [
       '[role="article"]',
       'div[data-result-index]',
@@ -401,34 +451,34 @@ class ServiceBusinessLeadScraper {
       'div[data-cid]',
       'div[jsaction]'
     ];
-    
+
     let bestSelector = null;
     let maxCount = 0;
-    
+
     for (const selector of selectorCandidates) {
       if (analysis[selector] && analysis[selector].count > maxCount) {
         maxCount = analysis[selector].count;
         bestSelector = selector;
       }
     }
-    
+
     if (bestSelector) {
       console.log(`✅ Using selector: ${bestSelector} (${maxCount} elements)`);
       return await this.page.$$(bestSelector);
     }
-    
+
     console.log('🔄 No standard selectors found, trying dynamic approach...');
-    
+
     const businessElements = await this.page.evaluate(() => {
       const allElements = document.querySelectorAll('div, a, span');
       const businessCandidates = [];
-      
+
       Array.from(allElements).forEach(element => {
         const text = element.textContent || '';
         const hasBusinessKeywords = text.match(/plumbing|service|repair|company|llc|inc|corp|solutions|pro|expert|contractor/i);
         const hasStarRating = text.match(/\d+\.?\d*\s*star/i) || element.querySelector('[aria-label*="star"]');
         const isReasonableLength = text.length > 10 && text.length < 200;
-        
+
         if ((hasBusinessKeywords || hasStarRating) && isReasonableLength) {
           let container = element;
           for (let i = 0; i < 5; i++) {
@@ -436,16 +486,16 @@ class ServiceBusinessLeadScraper {
               container = container.parentElement;
             }
           }
-          
+
           if (!businessCandidates.includes(container)) {
             businessCandidates.push(container);
           }
         }
       });
-      
+
       return businessCandidates.slice(0, 20);
     });
-    
+
     console.log(`🔍 Found ${businessElements.length} potential business containers using dynamic method`);
     return businessElements;
   }
@@ -642,7 +692,8 @@ class ServiceBusinessLeadScraper {
       maxBusinesses = 15,
       minStars = 1.0,
       maxStars = 4.1,
-      extractEmails = true // NEW: Enable email extraction by default
+      extractEmails = true, // NEW: Enable email extraction by default
+      maxScrolls = 10 // Maximum number of scroll attempts
     } = options;
 
     await this.searchServiceInArea(serviceType, city, state);
@@ -653,44 +704,64 @@ class ServiceBusinessLeadScraper {
     if (extractEmails) {
       console.log(`📧 Email extraction: ENABLED`);
     }
+    console.log(`📜 Will scroll up to ${maxScrolls} times to find results\n`);
 
     const businesses = [];
+    const processedNames = new Set(); // Track processed businesses to avoid duplicates
     let totalScanned = 0;
     let tooHighCount = 0;
     let tooLowCount = 0;
     let perfectCount = 0;
     let emailsFound = 0;
+    let scrollAttempts = 0;
+    let consecutiveNoNewResults = 0;
 
-    const businessElements = await this.findBusinessElements();
+    // Progressive scrolling and scanning
+    while (scrollAttempts < maxScrolls && businesses.length < maxBusinesses) {
+      scrollAttempts++;
 
-    if (businessElements.length === 0) {
-      throw new Error('No business elements found on the page.');
-    }
+      console.log(`\n${'='.repeat(80)}`);
+      console.log(`📜 Scroll attempt ${scrollAttempts}/${maxScrolls}`);
+      console.log(`${'='.repeat(80)}`);
 
-    console.log(`📍 Found ${businessElements.length} potential business elements`);
+      // Get current business elements
+      const businessElements = await this.findBusinessElements();
 
-    for (let i = 0; i < businessElements.length && businesses.length < maxBusinesses; i++) {
-      const element = businessElements[i];
+      if (businessElements.length === 0) {
+        console.log('⚠️  No business elements found on the page.');
+        break;
+      }
 
-      try {
-        console.log(`\n${'='.repeat(80)}`);
-        const businessInfo = await this.extractBusinessInfoEnhanced(element);
+      console.log(`📍 Currently visible: ${businessElements.length} business elements`);
 
-        if (businessInfo && businessInfo.name) {
-          totalScanned++;
+      let newResultsFound = false;
 
-          const ratingText = businessInfo.rating ? `${businessInfo.rating}⭐` : 'No rating';
-          const reviewText = businessInfo.reviewCount ? `(${businessInfo.reviewCount} reviews)` : '(No reviews)';
+      // Process each visible business element
+      for (let i = 0; i < businessElements.length && businesses.length < maxBusinesses; i++) {
+        const element = businessElements[i];
 
-          console.log(`\n📊 Business #${totalScanned}: ${businessInfo.name}`);
-          console.log(`   Rating: ${ratingText} ${reviewText}`);
+        try {
+          const businessInfo = await this.extractBusinessInfoEnhanced(element);
 
-          if (businessInfo.rating) {
-            if (businessInfo.rating >= minStars && businessInfo.rating <= maxStars) {
-              if (businessInfo.reviewCount >= minReviews) {
-                const isDuplicate = businesses.some(b => b.name === businessInfo.name);
+          if (businessInfo && businessInfo.name) {
+            // Skip if already processed
+            if (processedNames.has(businessInfo.name)) {
+              continue;
+            }
 
-                if (!isDuplicate) {
+            processedNames.add(businessInfo.name);
+            totalScanned++;
+            newResultsFound = true;
+
+            const ratingText = businessInfo.rating ? `${businessInfo.rating}⭐` : 'No rating';
+            const reviewText = businessInfo.reviewCount ? `(${businessInfo.reviewCount} reviews)` : '(No reviews)';
+
+            console.log(`\n📊 Business #${totalScanned}: ${businessInfo.name}`);
+            console.log(`   Rating: ${ratingText} ${reviewText}`);
+
+            if (businessInfo.rating) {
+              if (businessInfo.rating >= minStars && businessInfo.rating <= maxStars) {
+                if (businessInfo.reviewCount >= minReviews) {
                   // NEW: Click on business to get detailed info including website
                   console.log(`   🖱️  Clicking business to get details...`);
                   const details = await this.clickBusinessForDetails(element);
@@ -735,34 +806,68 @@ class ServiceBusinessLeadScraper {
                   console.log(`\n✅ ${urgency} LEAD #${perfectCount}: ${businessInfo.name} (${businessInfo.rating}⭐, ${businessInfo.reviewCount} reviews)`);
                   console.log(`   Email: ${email || 'Not found'}`);
                   console.log(`   Status: SAVED TO RESULTS`);
+
+                  // Close the details panel to go back to the list
+                  try {
+                    await this.page.keyboard.press('Escape');
+                    await this.waitFor(1000);
+                  } catch (e) {
+                    // Ignore errors when closing details panel
+                  }
                 } else {
-                  console.log(`⚠️  DUPLICATE: ${businessInfo.name} - Already found`);
+                  console.log(`❌ NOT ENOUGH REVIEWS: ${businessInfo.name} (${businessInfo.rating}⭐) - Only ${businessInfo.reviewCount} reviews (need ${minReviews}+)`);
                 }
-              } else {
-                console.log(`❌ NOT ENOUGH REVIEWS: ${businessInfo.name} (${businessInfo.rating}⭐) - Only ${businessInfo.reviewCount} reviews (need ${minReviews}+)`);
+              } else if (businessInfo.rating > maxStars) {
+                tooHighCount++;
+                console.log(`❌ TOO HIGH RATING: ${businessInfo.name} (${businessInfo.rating}⭐) - Already doing well`);
+              } else if (businessInfo.rating < minStars) {
+                tooLowCount++;
+                console.log(`❌ TOO LOW RATING: ${businessInfo.name} (${businessInfo.rating}⭐) - Might be permanently closed`);
               }
-            } else if (businessInfo.rating > maxStars) {
-              tooHighCount++;
-              console.log(`❌ TOO HIGH RATING: ${businessInfo.name} (${businessInfo.rating}⭐) - Already doing well`);
-            } else if (businessInfo.rating < minStars) {
-              tooLowCount++;
-              console.log(`❌ TOO LOW RATING: ${businessInfo.name} (${businessInfo.rating}⭐) - Might be permanently closed`);
+            } else {
+              console.log(`❌ NO RATING: ${businessInfo.name} - Can't determine star rating`);
             }
-          } else {
-            console.log(`❌ NO RATING: ${businessInfo.name} - Can't determine star rating`);
           }
+        } catch (error) {
+          console.log(`❌ Error processing business: ${error.message}`);
         }
-      } catch (error) {
-        console.log(`❌ Error processing business: ${error.message}`);
-        console.error(error);
       }
 
-      // Close the details panel to go back to the list
-      try {
-        await this.page.keyboard.press('Escape');
-        await this.waitFor(1000);
-      } catch (e) {
-        // Ignore errors when closing details panel
+      // Check if we found new results
+      if (!newResultsFound) {
+        consecutiveNoNewResults++;
+        console.log(`\n⚠️  No new results found in this scroll (${consecutiveNoNewResults}/3)`);
+
+        if (consecutiveNoNewResults >= 3) {
+          console.log(`\n🛑 Stopping: No new results after 3 consecutive scrolls`);
+          break;
+        }
+      } else {
+        consecutiveNoNewResults = 0; // Reset counter
+      }
+
+      // Stop if we have enough qualifying leads
+      if (businesses.length >= maxBusinesses) {
+        console.log(`\n✅ Found ${businesses.length} qualifying leads - target reached!`);
+        break;
+      }
+
+      // Scroll down to load more results
+      if (scrollAttempts < maxScrolls) {
+        console.log(`\n📜 Scrolling to load more results...`);
+        const scrolled = await this.scrollResultsPanel();
+
+        if (!scrolled) {
+          console.log(`\n⚠️  Could not scroll further - might be at the end of results`);
+          consecutiveNoNewResults++;
+
+          if (consecutiveNoNewResults >= 2) {
+            break;
+          }
+        }
+
+        // Wait for new content to load
+        await this.waitFor(3000);
       }
     }
 
@@ -1035,21 +1140,22 @@ async function testSingleService() {
   try {
     await scraper.init();
 
-    // NEW: Using enhanced method with email extraction
+    // NEW: Using enhanced method with email extraction and scrolling
     const businesses = await scraper.getBusinessesInAreaExpanded(
       'plumbers',
       'Phoenix',
       'Arizona',
       {
         minReviews: 2,
-        maxBusinesses: 5, // Start with fewer businesses for testing
-        minStars: 1.0,
-        maxStars: 4.1,
-        extractEmails: true // Enable email extraction
+        maxBusinesses: 10, // Increased to allow finding more leads
+        minStars: 2.0, // Focus on 2.0-3.9 star range
+        maxStars: 3.9,
+        extractEmails: false, // Disable email extraction for faster testing
+        maxScrolls: 15 // Increased scroll attempts to find lower-rated businesses
       }
     );
 
-    console.log(`\n🎉 FINAL RESULTS: Found ${businesses.length} businesses:`);
+    console.log(`\n🎉 FINAL RESULTS: Found ${businesses.length} businesses with 2.0-3.9 star ratings:`);
 
     if (businesses.length > 0) {
       businesses.forEach((business, i) => {
@@ -1073,8 +1179,8 @@ async function testSingleService() {
       console.log(`\n✅ Results exported successfully!`);
 
     } else {
-      console.log('\n📝 No businesses found matching criteria.');
-      console.log('💡 Try a different city or service type, or adjust the filters.');
+      console.log('\n📝 No businesses found with 2-3.9 star ratings.');
+      console.log('💡 Try a different city or service type, or lower the minReviews requirement.');
     }
 
   } catch (error) {
