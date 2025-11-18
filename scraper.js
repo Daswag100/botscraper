@@ -5,6 +5,7 @@ class ServiceBusinessLeadScraper {
   constructor() {
     this.browser = null;
     this.page = null;
+    this.emailPage = null; // Separate page for email extraction
   }
 
   // Helper function to wait - works with all Puppeteer versions
@@ -12,6 +13,282 @@ class ServiceBusinessLeadScraper {
     await this.page.evaluate((ms) => {
       return new Promise(resolve => setTimeout(resolve, ms));
     }, ms);
+  }
+
+  // Extract emails from page content using multiple methods
+  async extractEmailsFromPage(page) {
+    try {
+      const emails = await page.evaluate(() => {
+        const emailSet = new Set();
+        const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+
+        // Method 1: Extract from mailto: links
+        const mailtoLinks = document.querySelectorAll('a[href^="mailto:"]');
+        mailtoLinks.forEach(link => {
+          const href = link.getAttribute('href');
+          const email = href.replace('mailto:', '').split('?')[0].trim();
+          if (email && emailRegex.test(email)) {
+            emailSet.add(email.toLowerCase());
+          }
+        });
+
+        // Method 2: Extract from all text content
+        const bodyText = document.body.innerText || '';
+        const textEmails = bodyText.match(emailRegex);
+        if (textEmails) {
+          textEmails.forEach(email => emailSet.add(email.toLowerCase()));
+        }
+
+        // Method 3: Extract from HTML content
+        const htmlContent = document.body.innerHTML || '';
+        const htmlEmails = htmlContent.match(emailRegex);
+        if (htmlEmails) {
+          htmlEmails.forEach(email => emailSet.add(email.toLowerCase()));
+        }
+
+        // Method 4: Check specific sections (footer, header, contact sections)
+        const sections = document.querySelectorAll('footer, header, [class*="contact"], [id*="contact"], [class*="footer"], [id*="footer"]');
+        sections.forEach(section => {
+          const sectionText = section.innerText || '';
+          const sectionEmails = sectionText.match(emailRegex);
+          if (sectionEmails) {
+            sectionEmails.forEach(email => emailSet.add(email.toLowerCase()));
+          }
+        });
+
+        return Array.from(emailSet);
+      });
+
+      // Filter out common false positives
+      const validEmails = emails.filter(email => {
+        const lowerEmail = email.toLowerCase();
+        return !lowerEmail.includes('example.com') &&
+               !lowerEmail.includes('test.com') &&
+               !lowerEmail.includes('yourdomain.com') &&
+               !lowerEmail.includes('yourcompany.com') &&
+               !lowerEmail.includes('.png') &&
+               !lowerEmail.includes('.jpg') &&
+               !lowerEmail.includes('.jpeg') &&
+               !lowerEmail.includes('.gif') &&
+               !lowerEmail.includes('.svg');
+      });
+
+      return validEmails;
+    } catch (error) {
+      console.log(`   ⚠️  Error extracting emails from page: ${error.message}`);
+      return [];
+    }
+  }
+
+  // Try to find contact pages and extract emails
+  async tryContactPages(page, baseUrl) {
+    const contactPaths = [
+      '/contact',
+      '/contact-us',
+      '/contactus',
+      '/about',
+      '/about-us',
+      '/aboutus',
+      '/contact.html',
+      '/contact-us.html',
+      '/about.html',
+      '/about-us.html'
+    ];
+
+    const allEmails = new Set();
+
+    for (const path of contactPaths) {
+      try {
+        const contactUrl = new URL(path, baseUrl).href;
+        console.log(`   🔍 Trying contact page: ${contactUrl}`);
+
+        await page.goto(contactUrl, {
+          waitUntil: 'domcontentloaded',
+          timeout: 15000
+        });
+
+        await page.waitForTimeout(2000);
+
+        const emails = await this.extractEmailsFromPage(page);
+        if (emails.length > 0) {
+          console.log(`   ✅ Found ${emails.length} email(s) on ${path}: ${emails.join(', ')}`);
+          emails.forEach(email => allEmails.add(email));
+          break; // Stop after finding emails
+        }
+      } catch (error) {
+        // Silently continue to next path
+        continue;
+      }
+    }
+
+    return Array.from(allEmails);
+  }
+
+  // Main email extraction function with retry logic
+  async extractEmailFromWebsite(websiteUrl, businessName, maxRetries = 2) {
+    if (!websiteUrl) {
+      console.log(`   ⚠️  No website URL provided for ${businessName}`);
+      return null;
+    }
+
+    console.log(`   🌐 Visiting website: ${websiteUrl}`);
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      let tempPage = null;
+      try {
+        // Create a new page for email extraction
+        tempPage = await this.browser.newPage();
+        await tempPage.setViewport({ width: 1920, height: 1080 });
+        await tempPage.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+
+        // Set a reasonable timeout
+        tempPage.setDefaultTimeout(20000);
+
+        // Visit the main website page
+        console.log(`   📡 Attempt ${attempt}/${maxRetries}: Loading website...`);
+        await tempPage.goto(websiteUrl, {
+          waitUntil: 'domcontentloaded',
+          timeout: 20000
+        });
+
+        await tempPage.waitForTimeout(3000);
+
+        // Extract emails from main page
+        let emails = await this.extractEmailsFromPage(tempPage);
+
+        if (emails.length > 0) {
+          console.log(`   ✅ Found ${emails.length} email(s) on main page: ${emails.join(', ')}`);
+          await tempPage.close();
+          return emails[0]; // Return first email found
+        }
+
+        // Try contact pages if no emails found on main page
+        console.log(`   🔍 No emails on main page, checking contact pages...`);
+        emails = await this.tryContactPages(tempPage, websiteUrl);
+
+        if (emails.length > 0) {
+          await tempPage.close();
+          return emails[0]; // Return first email found
+        }
+
+        console.log(`   ❌ No emails found on ${websiteUrl}`);
+        await tempPage.close();
+        return null;
+
+      } catch (error) {
+        console.log(`   ⚠️  Attempt ${attempt} failed: ${error.message}`);
+        if (tempPage) {
+          try {
+            await tempPage.close();
+          } catch (e) {
+            // Ignore close errors
+          }
+        }
+
+        if (attempt < maxRetries) {
+          console.log(`   🔄 Retrying...`);
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+      }
+    }
+
+    console.log(`   ❌ Failed to extract email after ${maxRetries} attempts`);
+    return null;
+  }
+
+  // Click on business and extract detailed info including website
+  async clickBusinessForDetails(businessElement) {
+    try {
+      // Try to click on the business element
+      await businessElement.click();
+      console.log('   📍 Clicked on business, waiting for details panel...');
+      await this.waitFor(3000);
+
+      // Extract website and other details from the details panel
+      const details = await this.page.evaluate(() => {
+        const getTextContent = (selector) => {
+          const element = document.querySelector(selector);
+          return element ? element.textContent.trim() : null;
+        };
+
+        const getAttribute = (selector, attribute) => {
+          const element = document.querySelector(selector);
+          return element ? element.getAttribute(attribute) : null;
+        };
+
+        // Try to find website link
+        let website = null;
+        const websiteSelectors = [
+          'a[data-item-id="authority"]',
+          'a[href*="http"][data-item-id*="web"]',
+          'a[aria-label*="Website"]',
+          'button[data-item-id="authority"]',
+          '[data-tooltip*="website" i] a',
+          'a[href*="http"]:not([href*="google"])',
+        ];
+
+        for (const selector of websiteSelectors) {
+          const element = document.querySelector(selector);
+          if (element) {
+            let href = element.getAttribute('href');
+            if (!href) {
+              // Try to find href in parent or children
+              const linkInside = element.querySelector('a[href]');
+              if (linkInside) {
+                href = linkInside.getAttribute('href');
+              }
+            }
+            if (href && href.startsWith('http') && !href.includes('google.com')) {
+              website = href;
+              break;
+            }
+          }
+        }
+
+        // Try to find phone number
+        let phone = null;
+        const phoneSelectors = [
+          'button[data-item-id*="phone"]',
+          'button[aria-label*="Phone"]',
+          '[data-tooltip*="phone" i]'
+        ];
+
+        for (const selector of phoneSelectors) {
+          const element = document.querySelector(selector);
+          if (element) {
+            const phoneText = element.textContent || element.getAttribute('aria-label') || '';
+            const phoneMatch = phoneText.match(/(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
+            if (phoneMatch) {
+              phone = phoneMatch[0];
+              break;
+            }
+          }
+        }
+
+        // Try to find address
+        let address = null;
+        const addressSelectors = [
+          'button[data-item-id*="address"]',
+          'button[aria-label*="Address"]',
+          '[data-tooltip*="address" i]'
+        ];
+
+        for (const selector of addressSelectors) {
+          const element = document.querySelector(selector);
+          if (element) {
+            address = element.textContent.trim();
+            break;
+          }
+        }
+
+        return { website, phone, address };
+      });
+
+      return details;
+    } catch (error) {
+      console.log(`   ⚠️  Error clicking business for details: ${error.message}`);
+      return { website: null, phone: null, address: null };
+    }
   }
 
   async init() {
@@ -358,67 +635,106 @@ class ServiceBusinessLeadScraper {
     return businesses;
   }
 
-  // NEW ENHANCED METHOD FOR 1-4.1 STAR RANGE
+  // NEW ENHANCED METHOD FOR 1-4.1 STAR RANGE WITH EMAIL EXTRACTION
   async getBusinessesInAreaExpanded(serviceType, city, state = '', options = {}) {
-    const { 
-      minReviews = 3, 
+    const {
+      minReviews = 3,
       maxBusinesses = 15,
       minStars = 1.0,
-      maxStars = 4.1
+      maxStars = 4.1,
+      extractEmails = true // NEW: Enable email extraction by default
     } = options;
-    
+
     await this.searchServiceInArea(serviceType, city, state);
-    
+
     console.log('📋 Extracting business listings...');
     console.log(`🎯 Looking for businesses with ${minStars}-${maxStars} star ratings...`);
     console.log(`🔍 Minimum reviews required: ${minReviews}`);
-    
+    if (extractEmails) {
+      console.log(`📧 Email extraction: ENABLED`);
+    }
+
     const businesses = [];
     let totalScanned = 0;
     let tooHighCount = 0;
     let tooLowCount = 0;
     let perfectCount = 0;
-    
+    let emailsFound = 0;
+
     const businessElements = await this.findBusinessElements();
-    
+
     if (businessElements.length === 0) {
       throw new Error('No business elements found on the page.');
     }
-    
+
     console.log(`📍 Found ${businessElements.length} potential business elements`);
-    
+
     for (let i = 0; i < businessElements.length && businesses.length < maxBusinesses; i++) {
       const element = businessElements[i];
-      
+
       try {
+        console.log(`\n${'='.repeat(80)}`);
         const businessInfo = await this.extractBusinessInfoEnhanced(element);
-        
+
         if (businessInfo && businessInfo.name) {
           totalScanned++;
-          
+
           const ratingText = businessInfo.rating ? `${businessInfo.rating}⭐` : 'No rating';
           const reviewText = businessInfo.reviewCount ? `(${businessInfo.reviewCount} reviews)` : '(No reviews)';
-          
-          console.log(`📊 #${totalScanned}: ${businessInfo.name} - ${ratingText} ${reviewText}`);
-          
+
+          console.log(`\n📊 Business #${totalScanned}: ${businessInfo.name}`);
+          console.log(`   Rating: ${ratingText} ${reviewText}`);
+
           if (businessInfo.rating) {
             if (businessInfo.rating >= minStars && businessInfo.rating <= maxStars) {
               if (businessInfo.reviewCount >= minReviews) {
                 const isDuplicate = businesses.some(b => b.name === businessInfo.name);
-                
+
                 if (!isDuplicate) {
+                  // NEW: Click on business to get detailed info including website
+                  console.log(`   🖱️  Clicking business to get details...`);
+                  const details = await this.clickBusinessForDetails(element);
+
+                  // Merge the details with business info
+                  businessInfo.website = details.website || businessInfo.website || '';
+                  businessInfo.phone = details.phone || businessInfo.phone || '';
+                  businessInfo.address = details.address || businessInfo.address || '';
+
+                  console.log(`   🌐 Website: ${businessInfo.website || 'Not found'}`);
+                  console.log(`   📞 Phone: ${businessInfo.phone || 'Not found'}`);
+                  console.log(`   📍 Address: ${businessInfo.address || 'Not found'}`);
+
+                  // NEW: Extract email if website exists and email extraction is enabled
+                  let email = null;
+                  if (extractEmails && businessInfo.website) {
+                    console.log(`\n   📧 Starting email extraction for ${businessInfo.name}...`);
+                    email = await this.extractEmailFromWebsite(businessInfo.website, businessInfo.name);
+                    if (email) {
+                      emailsFound++;
+                      console.log(`   ✅ EMAIL FOUND: ${email}`);
+                    } else {
+                      console.log(`   ❌ No email found`);
+                    }
+                  } else if (!businessInfo.website) {
+                    console.log(`   ⚠️  No website to extract email from`);
+                  }
+
+                  // Add business to results (ALL businesses, with or without emails)
                   businesses.push({
                     ...businessInfo,
+                    email: email || '', // Add email field
                     serviceType: serviceType,
                     searchLocation: `${city}${state ? ', ' + state : ''}`,
                     extractedAt: new Date().toISOString()
                   });
-                  
+
                   perfectCount++;
-                  const urgency = businessInfo.rating < 2.0 ? 'CRITICAL' : 
+                  const urgency = businessInfo.rating < 2.0 ? 'CRITICAL' :
                                  businessInfo.rating < 3.0 ? 'URGENT' : 'HIGH';
-                  
-                  console.log(`✅ ${urgency} LEAD #${perfectCount}: ${businessInfo.name} (${businessInfo.rating}⭐, ${businessInfo.reviewCount} reviews) - NEEDS HELP!`);
+
+                  console.log(`\n✅ ${urgency} LEAD #${perfectCount}: ${businessInfo.name} (${businessInfo.rating}⭐, ${businessInfo.reviewCount} reviews)`);
+                  console.log(`   Email: ${email || 'Not found'}`);
+                  console.log(`   Status: SAVED TO RESULTS`);
                 } else {
                   console.log(`⚠️  DUPLICATE: ${businessInfo.name} - Already found`);
                 }
@@ -438,16 +754,27 @@ class ServiceBusinessLeadScraper {
         }
       } catch (error) {
         console.log(`❌ Error processing business: ${error.message}`);
+        console.error(error);
+      }
+
+      // Close the details panel to go back to the list
+      try {
+        await this.page.keyboard.press('Escape');
+        await this.waitFor(1000);
+      } catch (e) {
+        // Ignore errors when closing details panel
       }
     }
-    
+
+    console.log(`\n${'='.repeat(80)}`);
     console.log(`\n📊 SEARCH COMPLETE!`);
     console.log(`📋 Total businesses scanned: ${totalScanned}`);
     console.log(`✅ Opportunity leads (${minStars}-${maxStars}⭐): ${perfectCount}`);
+    console.log(`📧 Emails found: ${emailsFound} out of ${perfectCount}`);
     console.log(`❌ Too high rated (${maxStars}+⭐): ${tooHighCount}`);
     console.log(`❌ Too low rated (<${minStars}⭐): ${tooLowCount}`);
     console.log(`🎯 Final qualifying leads: ${businesses.length}`);
-    
+
     return businesses;
   }
 
@@ -575,6 +902,86 @@ class ServiceBusinessLeadScraper {
       await this.browser.close();
     }
   }
+
+  // NEW: Export businesses to CSV with email column
+  exportToCSV(businesses, filename = 'businesses_with_emails.csv') {
+    if (!businesses || businesses.length === 0) {
+      console.log('⚠️  No businesses to export');
+      return;
+    }
+
+    // CSV Headers
+    const headers = [
+      'Business Name',
+      'Rating',
+      'Review Count',
+      'Address',
+      'Phone',
+      'Website',
+      'Email',
+      'Service Type',
+      'Search Location',
+      'Google Maps URL',
+      'Extracted At'
+    ];
+
+    // Convert businesses to CSV rows
+    const rows = businesses.map(business => {
+      return [
+        `"${(business.name || '').replace(/"/g, '""')}"`,
+        business.rating || '',
+        business.reviewCount || '',
+        `"${(business.address || '').replace(/"/g, '""')}"`,
+        business.phone || '',
+        business.website || '',
+        business.email || '',
+        business.serviceType || '',
+        business.searchLocation || '',
+        business.googleMapsUrl || '',
+        business.extractedAt || ''
+      ].join(',');
+    });
+
+    // Combine headers and rows
+    const csvContent = [headers.join(','), ...rows].join('\n');
+
+    // Save to file
+    try {
+      if (!fs.existsSync('./results')) {
+        fs.mkdirSync('./results', { recursive: true });
+      }
+
+      const filepath = `./results/${filename}`;
+      fs.writeFileSync(filepath, csvContent);
+      console.log(`\n📁 CSV file saved: ${filepath}`);
+      console.log(`📊 Total records: ${businesses.length}`);
+      console.log(`📧 Records with emails: ${businesses.filter(b => b.email).length}`);
+    } catch (error) {
+      console.error(`❌ Error saving CSV: ${error.message}`);
+    }
+  }
+
+  // NEW: Export businesses to JSON
+  exportToJSON(businesses, filename = 'businesses_with_emails.json') {
+    if (!businesses || businesses.length === 0) {
+      console.log('⚠️  No businesses to export');
+      return;
+    }
+
+    try {
+      if (!fs.existsSync('./results')) {
+        fs.mkdirSync('./results', { recursive: true });
+      }
+
+      const filepath = `./results/${filename}`;
+      fs.writeFileSync(filepath, JSON.stringify(businesses, null, 2));
+      console.log(`\n📁 JSON file saved: ${filepath}`);
+      console.log(`📊 Total records: ${businesses.length}`);
+      console.log(`📧 Records with emails: ${businesses.filter(b => b.email).length}`);
+    } catch (error) {
+      console.error(`❌ Error saving JSON: ${error.message}`);
+    }
+  }
 }
 
 // Usage functions
@@ -624,53 +1031,55 @@ async function generateServiceLeads() {
 
 async function testSingleService() {
   const scraper = new ServiceBusinessLeadScraper();
-  
+
   try {
     await scraper.init();
-    
-    const businesses = await scraper.getBusinessesInArea(
+
+    // NEW: Using enhanced method with email extraction
+    const businesses = await scraper.getBusinessesInAreaExpanded(
       'plumbers',
       'Phoenix',
       'Arizona',
-      { 
+      {
         minReviews: 2,
-        maxBusinesses: 15
+        maxBusinesses: 5, // Start with fewer businesses for testing
+        minStars: 1.0,
+        maxStars: 4.1,
+        extractEmails: true // Enable email extraction
       }
     );
 
-    console.log(`\n🎉 FINAL RESULTS: Found ${businesses.length} businesses with 2-3.9 star ratings:`);
-    
+    console.log(`\n🎉 FINAL RESULTS: Found ${businesses.length} businesses:`);
+
     if (businesses.length > 0) {
       businesses.forEach((business, i) => {
         console.log(`\n${i+1}. ${business.name}`);
         console.log(`   ⭐ Rating: ${business.rating} (${business.reviewCount} reviews)`);
-        console.log(`   📍 Address: ${business.address || 'Address not found'}`);
-        console.log(`   📞 Phone: ${business.phone || 'Phone not found'}`);
-        console.log(`   🌐 Website: ${business.website || 'Website not found'}`);
+        console.log(`   📍 Address: ${business.address || 'Not found'}`);
+        console.log(`   📞 Phone: ${business.phone || 'Not found'}`);
+        console.log(`   🌐 Website: ${business.website || 'Not found'}`);
+        console.log(`   📧 Email: ${business.email || 'Not found'}`);
         console.log(`   💡 Outreach opportunity: Low rating needs reputation help!`);
       });
-      
-      if (!fs.existsSync('./test_results')) {
-        fs.mkdirSync('./test_results', { recursive: true });
-      }
-      
-      const testResults = {
-        testDate: new Date().toISOString(),
-        searchTerms: 'plumbers in Phoenix, Arizona',
-        totalFound: businesses.length,
-        businesses: businesses
-      };
-      
-      fs.writeFileSync('./test_results/test_plumbers_phoenix.json', JSON.stringify(testResults, null, 2));
-      console.log(`\n💾 Test results saved to: ./test_results/test_plumbers_phoenix.json`);
-      
+
+      // NEW: Export to CSV with email column
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
+      const csvFilename = `plumbers_phoenix_${timestamp}.csv`;
+      const jsonFilename = `plumbers_phoenix_${timestamp}.json`;
+
+      scraper.exportToCSV(businesses, csvFilename);
+      scraper.exportToJSON(businesses, jsonFilename);
+
+      console.log(`\n✅ Results exported successfully!`);
+
     } else {
-      console.log('\n📝 No businesses found with 2-3.9 star ratings.');
-      console.log('💡 Try a different city or service type, or lower the minReviews requirement.');
+      console.log('\n📝 No businesses found matching criteria.');
+      console.log('💡 Try a different city or service type, or adjust the filters.');
     }
 
   } catch (error) {
     console.error('❌ Test failed:', error.message);
+    console.error(error);
   } finally {
     console.log('\n🔄 Closing browser...');
     await scraper.close();
