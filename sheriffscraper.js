@@ -20,6 +20,68 @@ async function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+async function extractEmailFromWebsite(page, websiteUrl) {
+  if (!websiteUrl) return null;
+
+  try {
+    console.log(`    Checking website for email: ${websiteUrl}`);
+
+    // Navigate to the website
+    await page.goto(websiteUrl, {
+      waitUntil: 'domcontentloaded',
+      timeout: 15000
+    });
+    await delay(3000);
+
+    // Extract email from website
+    const websiteEmail = await page.evaluate(() => {
+      const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi;
+
+      // Check for mailto links first
+      const mailtoLinks = document.querySelectorAll('a[href^="mailto:"]');
+      if (mailtoLinks.length > 0) {
+        const email = mailtoLinks[0].getAttribute('href').replace('mailto:', '').split('?')[0].trim();
+        return email;
+      }
+
+      // Check contact page links
+      const contactLinks = document.querySelectorAll('a[href*="contact"], a[href*="Contact"]');
+      for (const link of contactLinks) {
+        const text = link.innerText || '';
+        const emailMatch = text.match(emailRegex);
+        if (emailMatch) return emailMatch[0];
+      }
+
+      // Check entire page content
+      const bodyText = document.body.innerText || document.body.textContent || '';
+      const emailMatches = bodyText.match(emailRegex);
+
+      if (emailMatches && emailMatches.length > 0) {
+        // Filter out common false positives
+        const validEmails = emailMatches.filter(e =>
+          !e.includes('example.com') &&
+          !e.includes('test.com') &&
+          !e.includes('sentry.') &&
+          !e.includes('noreply') &&
+          !e.includes('wixpress.') &&
+          !e.includes('placeholder')
+        );
+
+        if (validEmails.length > 0) {
+          return validEmails[0];
+        }
+      }
+
+      return null;
+    });
+
+    return websiteEmail;
+  } catch (error) {
+    console.log(`    Could not extract email from website: ${error.message}`);
+    return null;
+  }
+}
+
 async function scrapeGoogleMaps() {
   const browser = await puppeteer.launch({
     headless: false,
@@ -130,7 +192,7 @@ async function scrapeGoogleMaps() {
                 'h1[class*="fontHeadline"]',
                 'div[class*="fontHeadline"]'
               ];
-              
+
               for (const selector of nameSelectors) {
                 const nameEl = document.querySelector(selector);
                 if (nameEl && nameEl.innerText) {
@@ -142,7 +204,7 @@ async function scrapeGoogleMaps() {
 
               // Get phone number - multiple approaches
               let phone = null;
-              
+
               // Method 1: Look for phone button
               const phoneButtons = document.querySelectorAll('button[data-item-id^="phone"]');
               if (phoneButtons.length > 0) {
@@ -151,7 +213,7 @@ async function scrapeGoogleMaps() {
                   phone = ariaLabel.replace('Phone:', '').replace('Copy phone number', '').trim();
                 }
               }
-              
+
               // Method 2: Look for phone in text
               if (!phone) {
                 const allButtons = document.querySelectorAll('button');
@@ -164,7 +226,7 @@ async function scrapeGoogleMaps() {
                   }
                 }
               }
-              
+
               data.phone = phone;
 
               // Get address
@@ -182,7 +244,7 @@ async function scrapeGoogleMaps() {
                 'span[aria-label*="stars"]',
                 'div[jsaction*="rating"]'
               ];
-              
+
               for (const selector of ratingSelectors) {
                 const ratingEl = document.querySelector(selector);
                 if (ratingEl && ratingEl.innerText) {
@@ -200,46 +262,90 @@ async function scrapeGoogleMaps() {
                 data.reviews = null;
               }
 
-              // Check for website - CRITICAL CHECK
-              let hasWebsite = false;
-              
+              // Extract website URL
+              let websiteUrl = null;
+
               // Method 1: Check for website button/link with data-item-id
               const websiteButton = document.querySelector('a[data-item-id="authority"]');
               if (websiteButton) {
-                hasWebsite = true;
+                websiteUrl = websiteButton.getAttribute('href');
               }
-              
-              // Method 2: Look for "Website" text in buttons/links
-              if (!hasWebsite) {
-                const allButtons = document.querySelectorAll('button, a');
-                for (const btn of allButtons) {
-                  const ariaLabel = btn.getAttribute('aria-label');
-                  const text = btn.innerText;
-                  if ((ariaLabel && ariaLabel.toLowerCase().includes('website')) ||
-                      (text && text.toLowerCase() === 'website')) {
-                    hasWebsite = true;
-                    break;
-                  }
-                }
-              }
-              
-              // Method 3: Check for external links (not google/maps)
-              if (!hasWebsite) {
-                const allLinks = document.querySelectorAll('a[href^="http"]');
+
+              // Method 2: Look for "Website" text in links
+              if (!websiteUrl) {
+                const allLinks = document.querySelectorAll('a');
                 for (const link of allLinks) {
-                  const href = link.getAttribute('href');
-                  if (href && 
-                      !href.includes('google.com') && 
-                      !href.includes('maps.google') &&
-                      !href.includes('goo.gl') &&
-                      !href.includes('accounts.google')) {
-                    hasWebsite = true;
+                  const ariaLabel = link.getAttribute('aria-label');
+                  const text = link.innerText;
+                  if ((ariaLabel && ariaLabel.toLowerCase().includes('website')) ||
+                      (text && text.toLowerCase().trim() === 'website')) {
+                    websiteUrl = link.getAttribute('href');
                     break;
                   }
                 }
               }
 
-              data.hasWebsite = hasWebsite;
+              // Method 3: Check for external links (not google/maps)
+              if (!websiteUrl) {
+                const allLinks = document.querySelectorAll('a[href^="http"]');
+                for (const link of allLinks) {
+                  const href = link.getAttribute('href');
+                  if (href &&
+                      !href.includes('google.com') &&
+                      !href.includes('maps.google') &&
+                      !href.includes('goo.gl') &&
+                      !href.includes('accounts.google')) {
+                    websiteUrl = href;
+                    break;
+                  }
+                }
+              }
+
+              data.website = websiteUrl;
+
+              // Extract email from the page content
+              let email = null;
+              const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi;
+
+              // Method 1: Check buttons and links for emails
+              const allElements = document.querySelectorAll('button, a, span, div');
+              for (const el of allElements) {
+                const text = el.innerText || el.textContent || '';
+                const href = el.getAttribute('href') || '';
+
+                // Check for mailto links
+                if (href.startsWith('mailto:')) {
+                  email = href.replace('mailto:', '').split('?')[0].trim();
+                  break;
+                }
+
+                // Check text content for email
+                const emailMatch = text.match(emailRegex);
+                if (emailMatch && emailMatch[0]) {
+                  email = emailMatch[0];
+                  break;
+                }
+              }
+
+              // Method 2: Check entire page content
+              if (!email) {
+                const bodyText = document.body.innerText || document.body.textContent || '';
+                const emailMatches = bodyText.match(emailRegex);
+                if (emailMatches && emailMatches[0]) {
+                  // Filter out common false positives
+                  const validEmails = emailMatches.filter(e =>
+                    !e.includes('example.com') &&
+                    !e.includes('test.com') &&
+                    !e.includes('sentry.') &&
+                    !e.includes('noreply')
+                  );
+                  if (validEmails.length > 0) {
+                    email = validEmails[0];
+                  }
+                }
+              }
+
+              data.email = email;
 
               return data;
             });
@@ -247,27 +353,32 @@ async function scrapeGoogleMaps() {
             // Get the current URL (Google Maps link)
             const googleMapsLink = page.url();
 
-            // Save or skip based on website status
+            // Save business data
             if (details.name) {
-              if (!details.hasWebsite) {
-                const businessData = {
-                  businessName: details.name,
-                  phoneNumber: details.phone || 'N/A',
-                  address: details.address || 'N/A',
-                  rating: details.rating || 'N/A',
-                  reviews: details.reviews || 'N/A',
-                  googleMapsLink: googleMapsLink,
-                  businessType: businessType,
-                  location: location
-                };
-
-                results.push(businessData);
-                console.log(`✓ SAVED: ${details.name}`);
-                console.log(`  Phone: ${details.phone || 'N/A'}`);
-                console.log(`  (No website found)`);
-              } else {
-                console.log(`✗ SKIPPED: ${details.name} (Has website)`);
+              // If website found but no email, try to extract email from website
+              let finalEmail = details.email;
+              if (details.website && !finalEmail) {
+                finalEmail = await extractEmailFromWebsite(page, details.website);
               }
+
+              const businessData = {
+                businessName: details.name,
+                phoneNumber: details.phone || 'N/A',
+                address: details.address || 'N/A',
+                rating: details.rating || 'N/A',
+                reviews: details.reviews || 'N/A',
+                website: details.website || 'N/A',
+                email: finalEmail || 'N/A',
+                googleMapsLink: googleMapsLink,
+                businessType: businessType,
+                location: location
+              };
+
+              results.push(businessData);
+              console.log(`✓ SAVED: ${details.name}`);
+              console.log(`  Phone: ${details.phone || 'N/A'}`);
+              console.log(`  Website: ${details.website || 'N/A'}`);
+              console.log(`  Email: ${finalEmail || 'N/A'}`);
             } else {
               console.log('✗ Could not extract business name');
             }
@@ -317,21 +428,28 @@ async function autoScroll(page) {
 
 function saveToCsv() {
   if (results.length === 0) {
-    console.log('\n⚠️  No businesses without websites were found!');
+    console.log('\n⚠️  No businesses were found!');
     return;
   }
 
-  const csvHeader = 'Business Name,Phone Number,Address,Rating,Reviews,Google Maps Link,Business Type,Location\n';
-  const csvRows = results.map(r => 
-    `"${r.businessName.replace(/"/g, '""')}","${r.phoneNumber}","${r.address.replace(/"/g, '""')}","${r.rating}","${r.reviews}","${r.googleMapsLink}","${r.businessType}","${r.location}"`
+  const csvHeader = 'Business Name,Phone Number,Address,Rating,Reviews,Website,Email,Google Maps Link,Business Type,Location\n';
+  const csvRows = results.map(r =>
+    `"${r.businessName.replace(/"/g, '""')}","${r.phoneNumber}","${r.address.replace(/"/g, '""')}","${r.rating}","${r.reviews}","${r.website}","${r.email}","${r.googleMapsLink}","${r.businessType}","${r.location}"`
   ).join('\n');
 
   const csv = csvHeader + csvRows;
   const filename = `lagos_businesses_${Date.now()}.csv`;
 
   fs.writeFileSync(filename, csv);
+
+  // Calculate statistics
+  const withWebsite = results.filter(r => r.website !== 'N/A').length;
+  const withEmail = results.filter(r => r.email !== 'N/A').length;
+
   console.log(`\n========================================`);
   console.log(`✓ SUCCESS! Saved ${results.length} businesses to ${filename}`);
+  console.log(`  📊 Businesses with websites: ${withWebsite}`);
+  console.log(`  📧 Businesses with emails: ${withEmail}`);
   console.log(`========================================`);
 }
 
