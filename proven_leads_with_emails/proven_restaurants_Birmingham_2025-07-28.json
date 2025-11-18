@@ -1,0 +1,50 @@
+{
+  "searchDate": "2025-07-28T20:07:45.108Z",
+  "location": "Birmingham, England",
+  "serviceType": "restaurants",
+  "searchStrategy": "Network-Robust Proven Strategy with Email Extraction",
+  "emailStats": {
+    "totalBusinesses": 2,
+    "businessesWithEmails": 0,
+    "totalEmails": 0,
+    "verifiedEmails": 0
+  },
+  "totalBusinessesFound": 2,
+  "searchStats": {
+    "successfulSearches": 7,
+    "failedSearches": 5,
+    "successRate": "58%"
+  },
+  "summary": {
+    "jackpot": 1,
+    "critical": 0,
+    "highValue": 0,
+    "moderate": 1,
+    "averageRating": "2.45",
+    "averageReviews": 364
+  },
+  "businesses": [
+    {
+      "name": "The Wilderness",
+      "rating": 1,
+      "reviewCount": 453,
+      "googleMapsUrl": "https://www.google.com/maps/place/The+Wilderness/data=!4m7!3m6!1s0x4870bc89a0dbc8cf:0xddf2d5c01f7e207f!8m2!3d52.487239!4d-1.910561!16s%2Fg%2F11cnwjnyc0!19sChIJz8jboIm8cEgRfyB-H8DV8t0?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "CRITICAL",
+      "urgency": "IMMEDIATE",
+      "potentialValue": "VERY HIGH",
+      "isLowRating": true,
+      "extractedAt": "2025-07-28T20:03:50.503Z"
+    },
+    {
+      "name": "Tru Spice Caribbean Kitchen3.9(275)Caribbean",
+      "rating": 3.9,
+      "reviewCount": 275,
+      "googleMapsUrl": "",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-28T20:03:28.842Z"
+    }
+  ]
+}

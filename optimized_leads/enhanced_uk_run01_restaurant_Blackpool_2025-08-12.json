@@ -1,0 +1,80 @@
+{
+  "searchDate": "2025-08-12T16:09:35.657Z",
+  "runNumber": 1,
+  "location": "Blackpool, England",
+  "serviceType": "restaurant",
+  "searchStrategy": "Enhanced UK Multi-Strategy Search",
+  "duplicatesFiltered": 12,
+  "totalNewBusinessesFound": 4,
+  "summary": {
+    "critical": 0,
+    "highValue": 0,
+    "moderate": 2,
+    "mild": 2,
+    "averageRating": "3.50",
+    "averageReviews": 142,
+    "withContactInfo": 3
+  },
+  "businesses": [
+    {
+      "name": "Quick facts",
+      "rating": 3.2,
+      "reviewCount": 156,
+      "googleMapsUrl": "",
+      "address": "BlackpoolUnited KingdomPartly cloudy",
+      "phoneNumber": "",
+      "businessType": "Hotel",
+      "opportunityLevel": "MODERATE",
+      "urgency": "HIGH",
+      "potentialValue": "MODERATE",
+      "isLowRating": true,
+      "extractedAt": "2025-08-12T15:58:50.159Z",
+      "isNewLead": true
+    },
+    {
+      "name": "₦43,823",
+      "rating": 3.2,
+      "reviewCount": 156,
+      "googleMapsUrl": "",
+      "address": "2-star hotel",
+      "phoneNumber": "",
+      "businessType": "Hotel",
+      "opportunityLevel": "MODERATE",
+      "urgency": "HIGH",
+      "potentialValue": "MODERATE",
+      "isLowRating": true,
+      "extractedAt": "2025-08-12T15:58:50.159Z",
+      "isNewLead": true
+    },
+    {
+      "name": "Marco's New York Italian Blackpool",
+      "rating": 3.8,
+      "reviewCount": 157,
+      "googleMapsUrl": "https://www.google.co.uk/maps/place/Marco%27s+New+York+Italian+Blackpool/data=!4m7!3m6!1s0x487b455fa03ee6b7:0xaa6423bd514f95ff!8m2!3d53.820768!4d-3.049929!16s%2Fg%2F11y31vllsx!19sChIJt-Y-oF9Fe0gR_5VPUb0jZKo?authuser=0&hl=en&rclk=1",
+      "address": "Some of these hotel and vacation rental search results may be personalized based on your browsing activity and recent searches on Google, as well as travel confirmations sent to your Gmail",
+      "phoneNumber": "",
+      "businessType": "Takeaway",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-08-12T15:54:19.564Z",
+      "isNewLead": true
+    },
+    {
+      "name": "₦54,756",
+      "rating": 3.8,
+      "reviewCount": 99,
+      "googleMapsUrl": "",
+      "address": "",
+      "phoneNumber": "",
+      "businessType": "Hotel",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-08-12T15:58:50.159Z",
+      "isNewLead": true
+    }
+  ]
+}

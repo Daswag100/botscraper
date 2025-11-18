@@ -1,0 +1,33 @@
+{
+  "searchDate": "2025-07-25T00:07:23.699Z",
+  "location": "Coventry, England",
+  "serviceType": "auto repair",
+  "searchStrategy": "Network-Robust Proven Strategy",
+  "totalBusinessesFound": 1,
+  "searchStats": {
+    "successfulSearches": 72,
+    "failedSearches": 0,
+    "successRate": "100%"
+  },
+  "summary": {
+    "jackpot": 0,
+    "critical": 0,
+    "highValue": 0,
+    "moderate": 1,
+    "averageRating": "4.00",
+    "averageReviews": 299
+  },
+  "businesses": [
+    {
+      "name": "IN'n'OUT Autocentres Coventry",
+      "rating": 4,
+      "reviewCount": 299,
+      "googleMapsUrl": "https://www.google.com/maps/place/IN%27n%27OUT+Autocentres+Coventry/data=!4m7!3m6!1s0x48774bfdddd03cd7:0xc152e4bd6c339424!8m2!3d52.4114002!4d-1.4799468!16s%2Fg%2F11g1p3yjth!19sChIJ1zzQ3f1Ld0gRJJQzbL3kUsE?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-25T00:06:58.727Z"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "searchDate": "2025-08-10T16:46:36.055Z",
+  "location": "Manchester, England",
+  "serviceType": "auto repair",
+  "searchStrategy": "Network-Robust Proven Strategy",
+  "totalBusinessesFound": 5,
+  "searchStats": {
+    "successfulSearches": 20,
+    "failedSearches": 0,
+    "successRate": "100%"
+  },
+  "summary": {
+    "jackpot": 1,
+    "critical": 1,
+    "highValue": 2,
+    "moderate": 1,
+    "averageRating": "2.62",
+    "averageReviews": 121
+  },
+  "businesses": [
+    {
+      "name": "Mr Clutch Autocentres",
+      "rating": 1,
+      "reviewCount": 194,
+      "googleMapsUrl": "https://www.google.com/maps/place/Mr+Clutch+Autocentres/data=!4m7!3m6!1s0x487bb198da7247f1:0x6683eda5d5a38372!8m2!3d53.475869!4d-2.219432!16s%2Fg%2F1tqnl538!19sChIJ8Udy2pixe0gRcoOj1aXtg2Y?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "CRITICAL",
+      "urgency": "IMMEDIATE",
+      "potentialValue": "VERY HIGH",
+      "isLowRating": true,
+      "extractedAt": "2025-08-10T16:45:42.191Z"
+    },
+    {
+      "name": "RAC Mobile Mechanic - Manchester",
+      "rating": 2.3,
+      "reviewCount": 7,
+      "googleMapsUrl": "https://www.google.com/maps/place/RAC+Mobile+Mechanic+-+Manchester/data=!4m7!3m6!1s0xa1c5792a43a6ae59:0x549f1b359b247de6!8m2!3d53.477658!4d-2.3706571!16s%2Fg%2F11w4gt4fp_!19sChIJWa6mQyp5xaER5n0kmzUbn1Q?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "HIGH",
+      "urgency": "URGENT",
+      "potentialValue": "MODERATE",
+      "isLowRating": true,
+      "extractedAt": "2025-08-10T16:45:53.007Z"
+    },
+    {
+      "name": "Car Repair Manchester",
+      "rating": 3,
+      "reviewCount": 3,
+      "googleMapsUrl": "https://www.google.com/maps/place/Car+Repair+Manchester/data=!4m7!3m6!1s0x487bb181dd1657ab:0x51521bb0fe24a090!8m2!3d53.4605798!4d-2.2111663!16s%2Fg%2F11g9q5m8yq!19sChIJq1cW3YGxe0gRkKAk_rAbUlE?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "MODERATE",
+      "urgency": "HIGH",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-08-10T16:45:42.191Z"
+    },
+    {
+      "name": "RPM Auto Service",
+      "rating": 3,
+      "reviewCount": 2,
+      "googleMapsUrl": "https://www.google.com/maps/place/RPM+Auto+Service/data=!4m7!3m6!1s0x487bb0ef6fff11e5:0xf22f1e9891a6c211!8m2!3d53.5127569!4d-2.1967557!16s%2Fg%2F1w04jnhl!19sChIJ5RH_b--we0gREcKmkZgeL_I?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "MODERATE",
+      "urgency": "HIGH",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-08-10T16:46:03.890Z"
+    },
+    {
+      "name": "Kwik Fit - Stretford",
+      "rating": 3.8,
+      "reviewCount": 397,
+      "googleMapsUrl": "https://www.google.com/maps/place/Kwik+Fit+-+Stretford/data=!4m7!3m6!1s0x487bae74ab28dcb5:0x388c4e9bafa2470!8m2!3d53.460263!4d-2.289357!16s%2Fg%2F1tfqqhlc!19sChIJtdwoq3Sue0gRcCT6uunEiAM?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-08-10T16:46:36.046Z"
+    }
+  ]
+}

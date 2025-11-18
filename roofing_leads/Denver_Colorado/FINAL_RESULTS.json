@@ -1,0 +1,51 @@
+{
+  "searchDate": "2025-07-23T21:52:31.283Z",
+  "city": "Denver",
+  "state": "Colorado",
+  "reason": "Heavy hail seasons, altitude issues",
+  "totalFound": 3,
+  "criticalPriority": 0,
+  "urgentPriority": 0,
+  "highPriority": 3,
+  "businesses": [
+    {
+      "name": "ASAP Roofing",
+      "rating": 3.5,
+      "reviewCount": 99,
+      "phone": "855-901-7663",
+      "address": "",
+      "email": "",
+      "googleMapsUrl": "https://www.google.com/maps/place/ASAP+Roofing/data=!4m7!3m6!1s0x876c881e43f5f023:0x13b30f5c7e960c07!8m2!3d39.802339!4d-104.96711!16s%2Fg%2F1hc1xyl4_!19sChIJI_D1Qx6IbIcRBwyWflwPsxM?authuser=0&hl=en&rclk=1",
+      "extractedAt": "2025-07-23T21:51:13.410Z",
+      "searchTerm": "insurance roofing claims Denver",
+      "searchType": "INSURANCE_RELATED",
+      "priority": "HIGH"
+    },
+    {
+      "name": "Advanced Exteriors, Inc.",
+      "rating": 4.1,
+      "reviewCount": 246,
+      "phone": "303-756-7663",
+      "address": "",
+      "email": "",
+      "googleMapsUrl": "https://www.google.com/maps/place/Advanced+Exteriors,+Inc./data=!4m7!3m6!1s0x876c7de4e9ac04dd:0x23089e8335383b7b!8m2!3d39.6762898!4d-104.9312254!16s%2Fg%2F1wl4r2lx!19sChIJ3QSs6eR9bIcRezs4NYOeCCM?authuser=0&hl=en&rclk=1",
+      "extractedAt": "2025-07-23T21:49:39.397Z",
+      "searchTerm": "storm damage roofing Denver",
+      "searchType": "EMERGENCY_FOCUSED",
+      "priority": "HIGH"
+    },
+    {
+      "name": "Premier Roofing Company",
+      "rating": 4.2,
+      "reviewCount": 503,
+      "phone": "303-233-7663",
+      "address": "",
+      "email": "",
+      "googleMapsUrl": "https://www.google.com/maps/place/Premier+Roofing+Company/data=!4m7!3m6!1s0x876c7f4ddf91e63f:0xc03ac4373da5e3c6!8m2!3d39.7290105!4d-105.0191235!16s%2Fg%2F1tmqrvz2!19sChIJP-aR301_bIcRxuOlPTfEOsA?authuser=0&hl=en&rclk=1",
+      "extractedAt": "2025-07-23T21:49:10.817Z",
+      "searchTerm": "emergency roof repair Denver",
+      "searchType": "EMERGENCY_FOCUSED",
+      "priority": "HIGH"
+    }
+  ]
+}

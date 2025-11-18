@@ -1,0 +1,25 @@
+{
+  "searchDate": "2025-07-23T01:46:09.605Z",
+  "city": "Houston, Texas",
+  "industry": "Construction & Contracting",
+  "totalLeads": 1,
+  "averageRating": "3.1",
+  "ratingBreakdown": {
+    "2.0-2.9": 0,
+    "3.0-3.9": 1
+  },
+  "leads": [
+    {
+      "name": "Houston by Century Communities",
+      "rating": 3.1,
+      "reviewCount": 30,
+      "address": "",
+      "phone": "",
+      "website": "",
+      "serviceType": "home contractors",
+      "searchLocation": "Houston, Texas",
+      "extractedAt": "2025-07-23T01:45:00.700Z",
+      "searchType": "home contractors"
+    }
+  ]
+}

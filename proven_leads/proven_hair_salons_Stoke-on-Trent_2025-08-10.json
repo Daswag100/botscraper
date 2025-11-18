@@ -1,0 +1,44 @@
+{
+  "searchDate": "2025-08-10T16:58:15.377Z",
+  "location": "Stoke-on-Trent, England",
+  "serviceType": "hair salons",
+  "searchStrategy": "Network-Robust Proven Strategy",
+  "totalBusinessesFound": 2,
+  "searchStats": {
+    "successfulSearches": 80,
+    "failedSearches": 0,
+    "successRate": "100%"
+  },
+  "summary": {
+    "jackpot": 1,
+    "critical": 0,
+    "highValue": 0,
+    "moderate": 1,
+    "averageRating": "2.45",
+    "averageReviews": 179
+  },
+  "businesses": [
+    {
+      "name": "Hair & Co",
+      "rating": 1,
+      "reviewCount": 338,
+      "googleMapsUrl": "https://www.google.com/maps/place/Hair+%26+Co/data=!4m7!3m6!1s0x487a69d54a244335:0x661865aa1d29010b!8m2!3d53.0244717!4d-2.174955!16s%2Fg%2F1tl1m_0d!19sChIJNUMkStVpekgRCwEpHaplGGY?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "CRITICAL",
+      "urgency": "IMMEDIATE",
+      "potentialValue": "VERY HIGH",
+      "isLowRating": true,
+      "extractedAt": "2025-08-10T16:56:36.667Z"
+    },
+    {
+      "name": "Basement Hair Salon",
+      "rating": 3.9,
+      "reviewCount": 19,
+      "googleMapsUrl": "https://www.google.com/maps/place/Basement+Hair+Salon/data=!4m7!3m6!1s0x487a69d547a54c8f:0x42b2bfe0763ea91d!8m2!3d53.0251194!4d-2.1748809!16s%2Fg%2F11bvcvkfpb!19sChIJj0ylR9VpekgRHak-duC_skI?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-08-10T16:57:29.861Z"
+    }
+  ]
+}

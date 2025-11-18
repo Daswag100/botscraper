@@ -1,0 +1,38 @@
+{
+  "searchDate": "2025-07-23T21:48:56.389Z",
+  "city": "Oklahoma City",
+  "state": "Oklahoma",
+  "reason": "Tornado alley, storm chasers",
+  "totalFound": 2,
+  "criticalPriority": 0,
+  "urgentPriority": 0,
+  "highPriority": 2,
+  "businesses": [
+    {
+      "name": "Malarkey Roofing Products - Oklahoma City, OK",
+      "rating": 3.7,
+      "reviewCount": 21,
+      "phone": "(405) 261-6900",
+      "address": "",
+      "email": "",
+      "googleMapsUrl": "https://www.google.com/maps/place/Malarkey+Roofing+Products+-+Oklahoma+City,+OK/data=!4m7!3m6!1s0x87b20e60f4f30c6b:0xee3b631188c7de3a!8m2!3d35.431145!4d-97.652642!16s%2Fg%2F1261k0qrc!19sChIJawzz9GAOsocROt7HiBFjO-4?authuser=0&hl=en&rclk=1",
+      "extractedAt": "2025-07-23T21:48:54.291Z",
+      "searchTerm": "commercial roofing Oklahoma City",
+      "searchType": "GENERAL_SEARCH",
+      "priority": "HIGH"
+    },
+    {
+      "name": "Superior Exterior Insurance Restoration",
+      "rating": 4.2,
+      "reviewCount": 63,
+      "phone": "405-235-4245",
+      "address": "",
+      "email": "",
+      "googleMapsUrl": "https://www.google.com/maps/place/Superior+Exterior+Insurance+Restoration/data=!4m7!3m6!1s0x20ba2cc784576889:0xbab5c1a3b4006ae8!8m2!3d35.4559497!4d-97.4444485!16s%2Fg%2F11tjlb41sh!19sChIJiWhXhMcsuiAR6GoAtKPBtbo?authuser=0&hl=en&rclk=1",
+      "extractedAt": "2025-07-23T21:47:32.894Z",
+      "searchTerm": "insurance roofing claims Oklahoma City",
+      "searchType": "INSURANCE_RELATED",
+      "priority": "HIGH"
+    }
+  ]
+}

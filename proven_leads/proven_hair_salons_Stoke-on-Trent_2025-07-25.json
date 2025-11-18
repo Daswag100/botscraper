@@ -1,0 +1,33 @@
+{
+  "searchDate": "2025-07-25T00:09:40.621Z",
+  "location": "Stoke-on-Trent, England",
+  "serviceType": "hair salons",
+  "searchStrategy": "Network-Robust Proven Strategy",
+  "totalBusinessesFound": 1,
+  "searchStats": {
+    "successfulSearches": 84,
+    "failedSearches": 0,
+    "successRate": "100%"
+  },
+  "summary": {
+    "jackpot": 1,
+    "critical": 0,
+    "highValue": 0,
+    "moderate": 0,
+    "averageRating": "1.00",
+    "averageReviews": 337
+  },
+  "businesses": [
+    {
+      "name": "Hair & Co",
+      "rating": 1,
+      "reviewCount": 337,
+      "googleMapsUrl": "https://www.google.com/maps/place/Hair+%26+Co/data=!4m7!3m6!1s0x487a69d54a244335:0x661865aa1d29010b!8m2!3d53.0244717!4d-2.174955!16s%2Fg%2F1tl1m_0d!19sChIJNUMkStVpekgRCwEpHaplGGY?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "CRITICAL",
+      "urgency": "IMMEDIATE",
+      "potentialValue": "VERY HIGH",
+      "isLowRating": true,
+      "extractedAt": "2025-07-25T00:08:00.210Z"
+    }
+  ]
+}

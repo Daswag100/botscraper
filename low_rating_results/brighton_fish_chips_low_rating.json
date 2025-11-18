@@ -1,0 +1,25 @@
+{
+  "searchDate": "2025-07-24T16:30:31.526Z",
+  "searchQuery": "fish and chips in Brighton, England",
+  "strategy": "Multi-Strategy Low Rating Search",
+  "totalBusinessesFound": 2,
+  "lowReviewBusinesses": 2,
+  "businesses": [
+    {
+      "name": "All In 1 Takeaway",
+      "rating": 3.6,
+      "reviewCount": 213,
+      "googleMapsUrl": "https://www.google.com/maps/place/All+In+1+Takeaway/data=!4m7!3m6!1s0x48758f457ed0be2b:0xbb55b62b6f8d7bdf!8m2!3d50.8583708!4d-0.1036464!16s%2Fg%2F1ts3kp88!19sChIJK77QfkWPdUgR33uNbyu2Vbs?authuser=0&hl=en&rclk=1",
+      "isLowRating": true,
+      "opportunityLevel": "MODERATE"
+    },
+    {
+      "name": "Brighton Chippy Fish & Chips",
+      "rating": 4,
+      "reviewCount": 228,
+      "googleMapsUrl": "https://www.google.com/maps/place/Brighton+Chippy+Fish+%26+Chips/data=!4m7!3m6!1s0x487585743e0c550b:0x26c1e8c066b4ef25!8m2!3d50.8289408!4d-0.1417782!16s%2Fg%2F11cr_9_n7y!19sChIJC1UMPnSFdUgRJe-0ZsDowSY?authuser=0&hl=en&rclk=1",
+      "isLowRating": true,
+      "opportunityLevel": "MODERATE"
+    }
+  ]
+}

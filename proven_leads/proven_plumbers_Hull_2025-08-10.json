@@ -1,0 +1,66 @@
+{
+  "searchDate": "2025-08-10T16:59:20.697Z",
+  "location": "Hull, England",
+  "serviceType": "plumbers",
+  "searchStrategy": "Network-Robust Proven Strategy",
+  "totalBusinessesFound": 4,
+  "searchStats": {
+    "successfulSearches": 84,
+    "failedSearches": 0,
+    "successRate": "100%"
+  },
+  "summary": {
+    "jackpot": 0,
+    "critical": 2,
+    "highValue": 1,
+    "moderate": 1,
+    "averageRating": "2.75",
+    "averageReviews": 12
+  },
+  "businesses": [
+    {
+      "name": "AB Mechanical1.7(3)Plumber",
+      "rating": 1.7,
+      "reviewCount": 3,
+      "googleMapsUrl": "",
+      "opportunityLevel": "HIGH",
+      "urgency": "URGENT",
+      "potentialValue": "MODERATE",
+      "isLowRating": true,
+      "extractedAt": "2025-08-10T16:58:59.766Z"
+    },
+    {
+      "name": "Add missing information",
+      "rating": 2.3,
+      "reviewCount": 33,
+      "googleMapsUrl": "",
+      "opportunityLevel": "HIGH",
+      "urgency": "URGENT",
+      "potentialValue": "HIGH",
+      "isLowRating": true,
+      "extractedAt": "2025-08-10T16:58:59.765Z"
+    },
+    {
+      "name": "Abba Gas Services3.0(2)Plumber",
+      "rating": 3,
+      "reviewCount": 2,
+      "googleMapsUrl": "",
+      "opportunityLevel": "MODERATE",
+      "urgency": "HIGH",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-08-10T16:58:59.766Z"
+    },
+    {
+      "name": "Yorkshire Heating & Bathrooms Ltd4.0(8)Heating contractor",
+      "rating": 4,
+      "reviewCount": 8,
+      "googleMapsUrl": "",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-08-10T16:58:59.766Z"
+    }
+  ]
+}

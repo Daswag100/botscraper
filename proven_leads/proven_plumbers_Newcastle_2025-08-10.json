@@ -1,0 +1,44 @@
+{
+  "searchDate": "2025-08-10T16:51:26.192Z",
+  "location": "Newcastle, England",
+  "serviceType": "plumbers",
+  "searchStrategy": "Network-Robust Proven Strategy",
+  "totalBusinessesFound": 2,
+  "searchStats": {
+    "successfulSearches": 44,
+    "failedSearches": 0,
+    "successRate": "100%"
+  },
+  "summary": {
+    "jackpot": 0,
+    "critical": 0,
+    "highValue": 0,
+    "moderate": 2,
+    "averageRating": "3.70",
+    "averageReviews": 34
+  },
+  "businesses": [
+    {
+      "name": "Advantage Plumbing Solutions3.5(13)Plumber",
+      "rating": 3.5,
+      "reviewCount": 13,
+      "googleMapsUrl": "",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-08-10T16:50:18.315Z"
+    },
+    {
+      "name": "Murphy Plumbing3.9(54)Plumber",
+      "rating": 3.9,
+      "reviewCount": 54,
+      "googleMapsUrl": "",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-08-10T16:49:11.479Z"
+    }
+  ]
+}

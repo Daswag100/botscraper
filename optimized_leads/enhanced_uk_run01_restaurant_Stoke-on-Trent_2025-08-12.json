@@ -1,0 +1,65 @@
+{
+  "searchDate": "2025-08-12T17:10:22.949Z",
+  "runNumber": 1,
+  "location": "Stoke-on-Trent, England",
+  "serviceType": "restaurant",
+  "searchStrategy": "Enhanced UK Multi-Strategy Search",
+  "duplicatesFiltered": 4,
+  "totalNewBusinessesFound": 3,
+  "summary": {
+    "critical": 0,
+    "highValue": 0,
+    "moderate": 0,
+    "mild": 3,
+    "averageRating": "3.93",
+    "averageReviews": 103,
+    "withContactInfo": 3
+  },
+  "businesses": [
+    {
+      "name": "The Oriental Kitchen",
+      "rating": 3.8,
+      "reviewCount": 89,
+      "googleMapsUrl": "https://www.google.co.uk/maps/place/The+Oriental+Kitchen/data=!4m7!3m6!1s0x487a717b053d0a7f:0x11df8af4a61bd1b1!8m2!3d52.8038077!4d-2.1161292!16s%2Fg%2F1tgp9tgc!19sChIJfwo9BXtxekgRsdEbpvSK3xE?authuser=0&hl=en&rclk=1",
+      "address": "145 Newport RdOpen",
+      "phoneNumber": "",
+      "businessType": "",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-08-12T16:39:02.651Z",
+      "isNewLead": true
+    },
+    {
+      "name": "Taste of Paradise",
+      "rating": 4,
+      "reviewCount": 180,
+      "googleMapsUrl": "https://www.google.co.uk/maps/place/Taste+of+Paradise/data=!4m7!3m6!1s0x487a7dd8fd2842ad:0xca7cdf0ce820a0ff!8m2!3d52.7671279!4d-2.3769984!16s%2Fg%2F1tnhxw6s!19sChIJrUIo_dh9ekgR_6Ag6AzffMo?authuser=0&hl=en&rclk=1",
+      "address": "Taste of Paradise  4",
+      "phoneNumber": "",
+      "businessType": "",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-08-12T16:39:02.651Z",
+      "isNewLead": true
+    },
+    {
+      "name": "Restaurant Six",
+      "rating": 4,
+      "reviewCount": 41,
+      "googleMapsUrl": "https://www.google.co.uk/maps/place/Restaurant+Six/data=!4m7!3m6!1s0x487a69a1a5768be5:0x4e7034296b3c08f2!8m2!3d53.0214013!4d-2.1789713!16s%2Fg%2F11rbtf7bl8!19sChIJ5Yt2paFpekgR8gg8ayk0cE4?authuser=0&hl=en&rclk=1",
+      "address": "Restaurant Six  4",
+      "phoneNumber": "",
+      "businessType": "Restaurant",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-08-12T16:36:49.955Z",
+      "isNewLead": true
+    }
+  ]
+}

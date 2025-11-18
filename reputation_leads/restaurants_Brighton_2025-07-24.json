@@ -1,0 +1,77 @@
+{
+  "searchDate": "2025-07-24T17:31:52.888Z",
+  "location": "Brighton, England",
+  "serviceType": "restaurants",
+  "totalBusinessesFound": 5,
+  "strategies": [
+    "negative",
+    "geographic",
+    "multiservice",
+    "reviews"
+  ],
+  "summary": {
+    "immediate": 0,
+    "urgent": 0,
+    "high": 0,
+    "moderate": 5,
+    "averageRating": "4.02",
+    "totalReviews": 11539
+  },
+  "businesses": [
+    {
+      "name": "Bistro du Vin Brighton",
+      "rating": 3.9,
+      "reviewCount": 37,
+      "googleMapsUrl": "https://www.google.com/maps/place/Bistro+du+Vin+Brighton/data=!4m7!3m6!1s0x4875856d21f5eeb7:0x1df7b9408a1a8192!8m2!3d50.8205609!4d-0.14238!16s%2Fg%2F11gnpr5xh_!19sChIJt-71IW2FdUgRkoEaikC59x0?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T17:31:21.911Z"
+    },
+    {
+      "name": "Fogo de Chão Brazilian Steakhouse Brighton",
+      "rating": 4,
+      "reviewCount": 1483,
+      "googleMapsUrl": "https://www.google.com/maps/place/Fogo+de+Ch%C3%A3o+Brazilian+Steakhouse+Brighton/data=!4m7!3m6!1s0x4875850c8f15ad8f:0xbb7ee100dfa6350a!8m2!3d50.8218605!4d-0.1440849!16s%2Fg%2F11xb7ht57!19sChIJj60VjwyFdUgRCjWm3wDhfrs?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T17:31:40.785Z"
+    },
+    {
+      "name": "4.0(1,483)",
+      "rating": 4,
+      "reviewCount": 1483,
+      "googleMapsUrl": "",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T17:31:40.788Z"
+    },
+    {
+      "name": "Donatello",
+      "rating": 4.1,
+      "reviewCount": 4268,
+      "googleMapsUrl": "https://www.google.com/maps/place/Donatello/data=!4m7!3m6!1s0x4875850a50fd0147:0xad452a44085b6e1f!8m2!3d50.821675!4d-0.1398861!16s%2Fg%2F1tf15bks!19sChIJRwH9UAqFdUgRH25bCEQqRa0?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T17:29:12.458Z"
+    },
+    {
+      "name": "4.1(4,268)",
+      "rating": 4.1,
+      "reviewCount": 4268,
+      "googleMapsUrl": "",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T17:29:12.465Z"
+    }
+  ]
+}

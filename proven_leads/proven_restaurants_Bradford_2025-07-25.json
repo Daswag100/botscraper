@@ -1,0 +1,33 @@
+{
+  "searchDate": "2025-07-25T00:05:06.661Z",
+  "location": "Bradford, England",
+  "serviceType": "restaurants",
+  "searchStrategy": "Network-Robust Proven Strategy",
+  "totalBusinessesFound": 1,
+  "searchStats": {
+    "successfulSearches": 60,
+    "failedSearches": 0,
+    "successRate": "100%"
+  },
+  "summary": {
+    "jackpot": 0,
+    "critical": 1,
+    "highValue": 0,
+    "moderate": 0,
+    "averageRating": "2.00",
+    "averageReviews": 47
+  },
+  "businesses": [
+    {
+      "name": "We went for Valentine’s Day, and everything was just okay, nothing special at … MoreLike Share",
+      "rating": 2,
+      "reviewCount": 47,
+      "googleMapsUrl": "",
+      "opportunityLevel": "HIGH",
+      "urgency": "URGENT",
+      "potentialValue": "HIGH",
+      "isLowRating": true,
+      "extractedAt": "2025-07-25T00:03:36.283Z"
+    }
+  ]
+}

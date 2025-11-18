@@ -1,0 +1,23 @@
+{
+  "searchDate": "2025-07-23T21:19:46.461Z",
+  "city": "Denver",
+  "state": "Colorado",
+  "searchTerm": "roof repair Denver",
+  "batchNumber": 10,
+  "totalLeads": 1,
+  "businesses": [
+    {
+      "name": "ASAP Roofing",
+      "rating": 3.5,
+      "reviewCount": 99,
+      "phone": "855-901-7663",
+      "address": "",
+      "email": "",
+      "googleMapsUrl": "https://www.google.com/maps/place/ASAP+Roofing/data=!4m7!3m6!1s0x876c881e43f5f023:0x13b30f5c7e960c07!8m2!3d39.802339!4d-104.96711!16s%2Fg%2F1hc1xyl4_!19sChIJI_D1Qx6IbIcRBwyWflwPsxM?authuser=0&hl=en&rclk=1",
+      "extractedAt": "2025-07-23T21:18:56.568Z",
+      "searchTerm": "insurance roofing claims Denver",
+      "searchType": "INSURANCE_RELATED",
+      "priority": "HIGH"
+    }
+  ]
+}

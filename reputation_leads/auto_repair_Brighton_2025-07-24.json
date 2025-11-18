@@ -1,0 +1,66 @@
+{
+  "searchDate": "2025-07-24T17:34:03.245Z",
+  "location": "Brighton, England",
+  "serviceType": "auto repair",
+  "totalBusinessesFound": 4,
+  "strategies": [
+    "negative",
+    "geographic",
+    "multiservice",
+    "reviews"
+  ],
+  "summary": {
+    "immediate": 0,
+    "urgent": 0,
+    "high": 0,
+    "moderate": 4,
+    "averageRating": "4.05",
+    "totalReviews": 976
+  },
+  "businesses": [
+    {
+      "name": "Brighton Ford Service Department3.8(47)Oil change service",
+      "rating": 3.8,
+      "reviewCount": 47,
+      "googleMapsUrl": "",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T17:32:13.620Z"
+    },
+    {
+      "name": "Kwik Fit Plus - Brighton",
+      "rating": 4,
+      "reviewCount": 697,
+      "googleMapsUrl": "https://www.google.com/maps/place/Kwik+Fit+Plus+-+Brighton/data=!4m7!3m6!1s0x4875858faf3fd9b5:0x2068cc312d5f79a5!8m2!3d50.836829!4d-0.124092!16s%2Fg%2F1td47fk5!19sChIJtdk_r4-FdUgRpXlfLTHMaCA?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T17:33:33.966Z"
+    },
+    {
+      "name": "D&H Auto Repair, Inc.",
+      "rating": 4.2,
+      "reviewCount": 116,
+      "googleMapsUrl": "https://www.google.com/maps/place/D%26H+Auto+Repair,+Inc./data=!4m7!3m6!1s0x88234fec27bfd79d:0x56bbde9a6fa65f08!8m2!3d42.5250407!4d-83.7784443!16s%2Fg%2F1tj7fp23!19sChIJnde_J-xPI4gRCF-mb5reu1Y?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T17:32:04.889Z"
+    },
+    {
+      "name": "D&H Auto Repair, Inc.4.2(116)Auto repair shop",
+      "rating": 4.2,
+      "reviewCount": 116,
+      "googleMapsUrl": "",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T17:32:13.620Z"
+    }
+  ]
+}

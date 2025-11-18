@@ -1,0 +1,44 @@
+{
+  "searchDate": "2025-08-10T16:45:05.141Z",
+  "location": "Birmingham, England",
+  "serviceType": "restaurants",
+  "searchStrategy": "Network-Robust Proven Strategy",
+  "totalBusinessesFound": 2,
+  "searchStats": {
+    "successfulSearches": 12,
+    "failedSearches": 0,
+    "successRate": "100%"
+  },
+  "summary": {
+    "jackpot": 0,
+    "critical": 0,
+    "highValue": 0,
+    "moderate": 2,
+    "averageRating": "3.95",
+    "averageReviews": 200
+  },
+  "businesses": [
+    {
+      "name": "Tru Spice Caribbean Kitchen3.9(275)Caribbean",
+      "rating": 3.9,
+      "reviewCount": 275,
+      "googleMapsUrl": "",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-08-10T16:42:59.638Z"
+    },
+    {
+      "name": "Thank you so much for your kind words! We hope you enjoyed your theatre trip … More",
+      "rating": 4,
+      "reviewCount": 125,
+      "googleMapsUrl": "",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-08-10T16:43:10.537Z"
+    }
+  ]
+}

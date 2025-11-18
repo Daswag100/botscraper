@@ -1,0 +1,33 @@
+{
+  "searchDate": "2025-07-25T00:11:55.835Z",
+  "location": "Hull, England",
+  "serviceType": "plumbers",
+  "searchStrategy": "Network-Robust Proven Strategy",
+  "totalBusinessesFound": 1,
+  "searchStats": {
+    "successfulSearches": 96,
+    "failedSearches": 0,
+    "successRate": "100%"
+  },
+  "summary": {
+    "jackpot": 0,
+    "critical": 0,
+    "highValue": 0,
+    "moderate": 1,
+    "averageRating": "4.00",
+    "averageReviews": 1
+  },
+  "businesses": [
+    {
+      "name": "Yorkshire Gas and Water Ltd4.0(1)Plumber",
+      "rating": 4,
+      "reviewCount": 1,
+      "googleMapsUrl": "",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-25T00:10:38.994Z"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "searchDate": "2025-08-12T17:45:02.485Z",
+  "runNumber": 1,
+  "location": "Grimsby, England",
+  "serviceType": "restaurant",
+  "searchStrategy": "Enhanced UK Multi-Strategy Search",
+  "duplicatesFiltered": 7,
+  "totalNewBusinessesFound": 2,
+  "summary": {
+    "critical": 1,
+    "highValue": 0,
+    "moderate": 1,
+    "mild": 0,
+    "averageRating": "2.50",
+    "averageReviews": 297,
+    "withContactInfo": 2
+  },
+  "businesses": [
+    {
+      "name": "Abbys Wine Bar & Bistro",
+      "rating": 2,
+      "reviewCount": 383,
+      "googleMapsUrl": "https://www.google.co.uk/maps/place/Abbys+Wine+Bar+%26+Bistro/data=!4m7!3m6!1s0x48789cb2cfef67fd:0xb99142b17090d6bc!8m2!3d53.564091!4d-0.086383!16s%2Fg%2F1tzgnqyw!19sChIJ_Wfvz7KceEgRvNaQcLFCkbk?authuser=0&hl=en&rclk=1",
+      "address": "Some of these hotel and vacation rental search results may be personalized based on your browsing activity and recent searches on Google, as well as travel confirmations sent to your Gmail",
+      "phoneNumber": "",
+      "businessType": "hotel",
+      "opportunityLevel": "CRITICAL",
+      "urgency": "IMMEDIATE",
+      "potentialValue": "VERY HIGH",
+      "isLowRating": true,
+      "extractedAt": "2025-08-12T17:30:00.610Z",
+      "isNewLead": true
+    },
+    {
+      "name": "Sage",
+      "rating": 3,
+      "reviewCount": 211,
+      "googleMapsUrl": "https://www.google.co.uk/maps/place/Sage/data=!4m7!3m6!1s0x48789cb317ef6b8f:0xc59333deafd0cd4!8m2!3d53.5648757!4d-0.0844599!16s%2Fg%2F1yh9vgrcy!19sChIJj2vvF7OceEgR1Az96j0zWQw?authuser=0&hl=en&rclk=1",
+      "address": "Some of these hotel and vacation rental search results may be personalized based on your browsing activity and recent searches on Google, as well as travel confirmations sent to your Gmail",
+      "phoneNumber": "",
+      "businessType": "hotel",
+      "opportunityLevel": "MODERATE",
+      "urgency": "HIGH",
+      "potentialValue": "MODERATE",
+      "isLowRating": true,
+      "extractedAt": "2025-08-12T17:30:28.260Z",
+      "isNewLead": true
+    }
+  ]
+}

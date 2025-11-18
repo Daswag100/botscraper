@@ -1,0 +1,46 @@
+{
+  "searchDate": "2025-07-23T23:52:52.799Z",
+  "searchQuery": "fish and chips in Brighton, England",
+  "strategy": "Multiple Search Terms for Low Review Count Businesses",
+  "reviewCriteria": "8-80 reviews (manageable improvement targets)",
+  "totalSearches": 26,
+  "totalFound": 1,
+  "analysis": {
+    "byReviewRange": {
+      "8-20": 0,
+      "21-40": 0,
+      "41-60": 0,
+      "61-80": 1
+    },
+    "byOpportunityLevel": {
+      "GOOD": 1
+    },
+    "byPaymentPotential": {
+      "VERY_LOW": 1
+    },
+    "byRatingMovability": {
+      "VERY_DIFFICULT": 1
+    },
+    "bySearchTerm": {
+      "fish and chips Whitehawk": 1
+    },
+    "averageReviewCount": 64,
+    "averageRating": 3.4
+  },
+  "businesses": [
+    {
+      "name": "By the Beach Fish & Chips3.4(64)Fish & Chips",
+      "rating": 3.4,
+      "reviewCount": 64,
+      "address": "",
+      "phone": "",
+      "website": "",
+      "googleMapsUrl": "https://www.google.com/maps/search/By%20the%20Beach%20Fish%20%26%20Chips3.4(64)Fish%20%26%20Chips",
+      "searchTerm": "fish and chips Whitehawk",
+      "searchNumber": 26,
+      "opportunityLevel": "GOOD",
+      "paymentPotential": "VERY_LOW",
+      "ratingMovability": "VERY_DIFFICULT"
+    }
+  ]
+}

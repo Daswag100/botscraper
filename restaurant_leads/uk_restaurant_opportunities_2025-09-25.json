@@ -1,0 +1,252 @@
+{
+  "searchDate": "2025-09-25T12:30:22.652Z",
+  "runNumber": 1,
+  "location": "Multiple UK Cities",
+  "serviceType": "restaurant",
+  "searchStrategy": "Comprehensive Restaurant Reputation Management Opportunities",
+  "targetBusinessCount": 30,
+  "actualBusinessCount": 9,
+  "targetAchieved": false,
+  "summary": {
+    "repairLeads": {
+      "count": 4,
+      "critical": 1,
+      "high": 0,
+      "medium": 3,
+      "avgRating": "3.20",
+      "avgReviews": 638138291
+    },
+    "growthLeads": {
+      "count": 5,
+      "highPotential": 0,
+      "goodPotential": 1,
+      "mediumPotential": 4,
+      "avgRating": "4.86",
+      "avgReviews": 37
+    },
+    "totalLeads": 9,
+    "withContactInfo": 8
+  },
+  "repairLeads": [
+    {
+      "name": "var k=this||self;var l;",
+      "rating": 2,
+      "reviewCount": 2552552550,
+      "googleMapsUrl": "https://www.google.com/maps/search/var%20k%3Dthis%7C%7Cself%3Bvar%20l%3B",
+      "address": "Show web results for worst restaurants Bristol instead",
+      "phoneNumber": "0123456789",
+      "businessType": "restaurant",
+      "leadType": "REPUTATION_REPAIR",
+      "urgencyLevel": "CRITICAL",
+      "extractedAt": "2025-09-25T12:29:44.087Z"
+    },
+    {
+      "name": "Chicken Bazooka",
+      "rating": 3.4,
+      "reviewCount": 428,
+      "googleMapsUrl": "https://www.google.com/maps/place/?cid=9206169396655615762",
+      "address": "Great prices, food cooked well and tastey",
+      "phoneNumber": "",
+      "businessType": "",
+      "leadType": "REPUTATION_REPAIR",
+      "urgencyLevel": "MEDIUM",
+      "extractedAt": "2025-09-25T12:24:34.121Z"
+    },
+    {
+      "name": "Kebab House | Takeaway",
+      "rating": 3.7,
+      "reviewCount": 87,
+      "googleMapsUrl": "https://www.google.com/maps/place/?cid=197080566184246498",
+      "address": "Takeaway3",
+      "phoneNumber": "",
+      "businessType": "Kebab",
+      "leadType": "REPUTATION_REPAIR",
+      "urgencyLevel": "MEDIUM",
+      "extractedAt": "2025-09-25T12:22:10.608Z"
+    },
+    {
+      "name": "Best Kebab Fish and Chips",
+      "rating": 3.7,
+      "reviewCount": 98,
+      "googleMapsUrl": "https://www.google.com/maps/place/?cid=5455761503046744532",
+      "address": "Best Kebab Fish and Chips3",
+      "phoneNumber": "",
+      "businessType": "Kebab",
+      "leadType": "REPUTATION_REPAIR",
+      "urgencyLevel": "MEDIUM",
+      "extractedAt": "2025-09-25T12:23:24.728Z"
+    }
+  ],
+  "growthLeads": [
+    {
+      "name": "Parsnip Mash Ltd",
+      "rating": 5,
+      "reviewCount": 24,
+      "googleMapsUrl": "https://www.google.com/maps/place/?cid=8134791517706162903",
+      "address": "",
+      "phoneNumber": "",
+      "businessType": "",
+      "leadType": "REVIEW_GROWTH",
+      "growthPotential": "GOOD",
+      "extractedAt": "2025-09-25T12:29:56.122Z"
+    },
+    {
+      "name": "Biya2 Leeds",
+      "rating": 4.8,
+      "reviewCount": 32,
+      "googleMapsUrl": "https://www.google.com/maps/place/?cid=16360707675624826279",
+      "address": "RestaurantLeeds, United Kingdom",
+      "phoneNumber": "",
+      "businessType": "Restaurant",
+      "leadType": "REVIEW_GROWTH",
+      "growthPotential": "MEDIUM",
+      "extractedAt": "2025-09-25T12:27:17.366Z"
+    },
+    {
+      "name": "herd. Liverpool",
+      "rating": 4.7,
+      "reviewCount": 40,
+      "googleMapsUrl": "https://www.google.com/maps/place/?cid=14421053493736525631",
+      "address": "Liverpool4",
+      "phoneNumber": "",
+      "businessType": "Restaurant",
+      "leadType": "REVIEW_GROWTH",
+      "growthPotential": "MEDIUM",
+      "extractedAt": "2025-09-25T12:24:48.076Z"
+    },
+    {
+      "name": "Vetch",
+      "rating": 4.8,
+      "reviewCount": 42,
+      "googleMapsUrl": "https://www.google.com/maps/place/?cid=13380567591939150224",
+      "address": "RestaurantLiverpool, United Kingdom",
+      "phoneNumber": "",
+      "businessType": "Restaurant",
+      "leadType": "REVIEW_GROWTH",
+      "growthPotential": "MEDIUM",
+      "extractedAt": "2025-09-25T12:24:48.094Z"
+    },
+    {
+      "name": "Hume",
+      "rating": 5,
+      "reviewCount": 47,
+      "googleMapsUrl": "https://www.google.com/maps/place/?cid=9620431007677894350",
+      "address": "RestaurantLiverpool, United Kingdom",
+      "phoneNumber": "",
+      "businessType": "Restaurant",
+      "leadType": "REVIEW_GROWTH",
+      "growthPotential": "MEDIUM",
+      "extractedAt": "2025-09-25T12:24:48.080Z"
+    }
+  ],
+  "allLeads": [
+    {
+      "name": "Kebab House | Takeaway",
+      "rating": 3.7,
+      "reviewCount": 87,
+      "googleMapsUrl": "https://www.google.com/maps/place/?cid=197080566184246498",
+      "address": "Takeaway3",
+      "phoneNumber": "",
+      "businessType": "Kebab",
+      "leadType": "REPUTATION_REPAIR",
+      "urgencyLevel": "MEDIUM",
+      "extractedAt": "2025-09-25T12:22:10.608Z"
+    },
+    {
+      "name": "Best Kebab Fish and Chips",
+      "rating": 3.7,
+      "reviewCount": 98,
+      "googleMapsUrl": "https://www.google.com/maps/place/?cid=5455761503046744532",
+      "address": "Best Kebab Fish and Chips3",
+      "phoneNumber": "",
+      "businessType": "Kebab",
+      "leadType": "REPUTATION_REPAIR",
+      "urgencyLevel": "MEDIUM",
+      "extractedAt": "2025-09-25T12:23:24.728Z"
+    },
+    {
+      "name": "Chicken Bazooka",
+      "rating": 3.4,
+      "reviewCount": 428,
+      "googleMapsUrl": "https://www.google.com/maps/place/?cid=9206169396655615762",
+      "address": "Great prices, food cooked well and tastey",
+      "phoneNumber": "",
+      "businessType": "",
+      "leadType": "REPUTATION_REPAIR",
+      "urgencyLevel": "MEDIUM",
+      "extractedAt": "2025-09-25T12:24:34.121Z"
+    },
+    {
+      "name": "var k=this||self;var l;",
+      "rating": 2,
+      "reviewCount": 2552552550,
+      "googleMapsUrl": "https://www.google.com/maps/search/var%20k%3Dthis%7C%7Cself%3Bvar%20l%3B",
+      "address": "Show web results for worst restaurants Bristol instead",
+      "phoneNumber": "0123456789",
+      "businessType": "restaurant",
+      "leadType": "REPUTATION_REPAIR",
+      "urgencyLevel": "CRITICAL",
+      "extractedAt": "2025-09-25T12:29:44.087Z"
+    },
+    {
+      "name": "herd. Liverpool",
+      "rating": 4.7,
+      "reviewCount": 40,
+      "googleMapsUrl": "https://www.google.com/maps/place/?cid=14421053493736525631",
+      "address": "Liverpool4",
+      "phoneNumber": "",
+      "businessType": "Restaurant",
+      "leadType": "REVIEW_GROWTH",
+      "growthPotential": "MEDIUM",
+      "extractedAt": "2025-09-25T12:24:48.076Z"
+    },
+    {
+      "name": "Hume",
+      "rating": 5,
+      "reviewCount": 47,
+      "googleMapsUrl": "https://www.google.com/maps/place/?cid=9620431007677894350",
+      "address": "RestaurantLiverpool, United Kingdom",
+      "phoneNumber": "",
+      "businessType": "Restaurant",
+      "leadType": "REVIEW_GROWTH",
+      "growthPotential": "MEDIUM",
+      "extractedAt": "2025-09-25T12:24:48.080Z"
+    },
+    {
+      "name": "Vetch",
+      "rating": 4.8,
+      "reviewCount": 42,
+      "googleMapsUrl": "https://www.google.com/maps/place/?cid=13380567591939150224",
+      "address": "RestaurantLiverpool, United Kingdom",
+      "phoneNumber": "",
+      "businessType": "Restaurant",
+      "leadType": "REVIEW_GROWTH",
+      "growthPotential": "MEDIUM",
+      "extractedAt": "2025-09-25T12:24:48.094Z"
+    },
+    {
+      "name": "Biya2 Leeds",
+      "rating": 4.8,
+      "reviewCount": 32,
+      "googleMapsUrl": "https://www.google.com/maps/place/?cid=16360707675624826279",
+      "address": "RestaurantLeeds, United Kingdom",
+      "phoneNumber": "",
+      "businessType": "Restaurant",
+      "leadType": "REVIEW_GROWTH",
+      "growthPotential": "MEDIUM",
+      "extractedAt": "2025-09-25T12:27:17.366Z"
+    },
+    {
+      "name": "Parsnip Mash Ltd",
+      "rating": 5,
+      "reviewCount": 24,
+      "googleMapsUrl": "https://www.google.com/maps/place/?cid=8134791517706162903",
+      "address": "",
+      "phoneNumber": "",
+      "businessType": "",
+      "leadType": "REVIEW_GROWTH",
+      "growthPotential": "GOOD",
+      "extractedAt": "2025-09-25T12:29:56.122Z"
+    }
+  ]
+}

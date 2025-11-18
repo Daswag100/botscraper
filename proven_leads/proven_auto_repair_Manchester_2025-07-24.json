@@ -1,0 +1,66 @@
+{
+  "searchDate": "2025-07-24T23:58:14.637Z",
+  "location": "Manchester, England",
+  "serviceType": "auto repair",
+  "searchStrategy": "Network-Robust Proven Strategy",
+  "totalBusinessesFound": 4,
+  "searchStats": {
+    "successfulSearches": 24,
+    "failedSearches": 0,
+    "successRate": "100%"
+  },
+  "summary": {
+    "jackpot": 2,
+    "critical": 0,
+    "highValue": 1,
+    "moderate": 1,
+    "averageRating": "2.25",
+    "averageReviews": 66
+  },
+  "businesses": [
+    {
+      "name": "Harnoor Kaur1 review5 months ago WORST EXPERIENCE.",
+      "rating": 1,
+      "reviewCount": 1,
+      "googleMapsUrl": "",
+      "opportunityLevel": "CRITICAL",
+      "urgency": "IMMEDIATE",
+      "potentialValue": "HIGH",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T23:56:13.225Z"
+    },
+    {
+      "name": "Mr Clutch Autocentres",
+      "rating": 1,
+      "reviewCount": 192,
+      "googleMapsUrl": "https://www.google.com/maps/place/Mr+Clutch+Autocentres/data=!4m7!3m6!1s0x487bb198da7247f1:0x6683eda5d5a38372!8m2!3d53.475869!4d-2.219432!16s%2Fg%2F1tqnl538!19sChIJ8Udy2pixe0gRcoOj1aXtg2Y?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "CRITICAL",
+      "urgency": "IMMEDIATE",
+      "potentialValue": "VERY HIGH",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T23:56:34.634Z"
+    },
+    {
+      "name": "Car Repair Manchester",
+      "rating": 3,
+      "reviewCount": 3,
+      "googleMapsUrl": "https://www.google.com/maps/place/Car+Repair+Manchester/data=!4m7!3m6!1s0x487bb181dd1657ab:0x51521bb0fe24a090!8m2!3d53.4605798!4d-2.2111663!16s%2Fg%2F11g9q5m8yq!19sChIJq1cW3YGxe0gRkKAk_rAbUlE?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "MODERATE",
+      "urgency": "HIGH",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T23:56:34.636Z"
+    },
+    {
+      "name": "Panache Auto Centre German Vehicle Specialists",
+      "rating": 4,
+      "reviewCount": 67,
+      "googleMapsUrl": "https://www.google.com/maps/place/Panache+Auto+Centre+German+Vehicle+Specialists/data=!4m7!3m6!1s0x487bb19afea53e67:0x1d40b8d749d0ff2!8m2!3d53.4697585!4d-2.2213481!16s%2Fg%2F1tdy409m!19sChIJZz6l_pqxe0gR8g-ddI0L1AE?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T23:57:27.684Z"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "searchDate": "2025-07-23T22:05:15.430Z",
+  "searchLocation": "Oklahoma City, Oklahoma",
+  "searchStrategy": "Deep Pagination - Tornado Alley Focus",
+  "searchQuery": "roofing contractors Oklahoma City Oklahoma",
+  "runtimeMinutes": 1.4,
+  "totalFound": 1,
+  "priorityBreakdown": {
+    "critical": 0,
+    "urgent": 0,
+    "high": 1
+  },
+  "averageRating": "4.20",
+  "tornadoAlleyFactor": "High storm damage = reputation issues guaranteed",
+  "businesses": [
+    {
+      "name": "Oklahoma City Roofing Repair",
+      "rating": 4.2,
+      "reviewCount": 115,
+      "phone": "405-442-7297",
+      "address": "",
+      "email": "",
+      "googleMapsUrl": "https://www.google.com/maps/place/Oklahoma+City+Roofing+Repair/data=!4m7!3m6!1s0x87b20e5e7b47a32d:0x5f159a69ed1baaa!8m2!3d35.46902!4d-97.5158341!16s%2Fg%2F11clstqslk!19sChIJLaNHe14OsocRqrrRnqZZ8QU?authuser=0&hl=en&rclk=1",
+      "extractedAt": "2025-07-23T22:04:34.632Z",
+      "pageFound": 2,
+      "priority": "HIGH",
+      "stormDamageRisk": "MEDIUM"
+    }
+  ]
+}

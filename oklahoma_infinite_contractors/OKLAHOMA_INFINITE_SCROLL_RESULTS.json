@@ -1,0 +1,21 @@
+{
+  "searchDate": "2025-07-23T22:25:39.501Z",
+  "searchLocation": "Oklahoma City, Oklahoma",
+  "searchStrategy": "Infinite Scroll - Broad Contractor Search",
+  "searchQuery": "contractors Oklahoma City",
+  "ratingFilter": "1.0 to 4.1 stars",
+  "runtimeMinutes": 0.3,
+  "totalFound": 0,
+  "priorityBreakdown": {
+    "critical": 0,
+    "urgent": 0,
+    "high": 0,
+    "medium": 0
+  },
+  "targetMetrics": {
+    "under4Stars": 0,
+    "averageRating": "NaN"
+  },
+  "tornadoAlleyContext": "Oklahoma City storm damage creates reputation management opportunities",
+  "businesses": []
+}

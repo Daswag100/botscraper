@@ -1,0 +1,33 @@
+{
+  "searchDate": "2025-07-25T00:02:48.204Z",
+  "location": "Newcastle, England",
+  "serviceType": "plumbers",
+  "searchStrategy": "Network-Robust Proven Strategy",
+  "totalBusinessesFound": 1,
+  "searchStats": {
+    "successfulSearches": 48,
+    "failedSearches": 0,
+    "successRate": "100%"
+  },
+  "summary": {
+    "jackpot": 0,
+    "critical": 0,
+    "highValue": 0,
+    "moderate": 1,
+    "averageRating": "3.80",
+    "averageReviews": 55
+  },
+  "businesses": [
+    {
+      "name": "Murphy Plumbing3.8(55)Plumber",
+      "rating": 3.8,
+      "reviewCount": 55,
+      "googleMapsUrl": "",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-25T00:00:48.715Z"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "searchDate": "2025-07-24T17:37:08.945Z",
+  "location": "Brighton, England",
+  "serviceType": "plumbers",
+  "totalBusinessesFound": 5,
+  "strategies": [
+    "negative",
+    "geographic",
+    "multiservice",
+    "reviews"
+  ],
+  "summary": {
+    "immediate": 0,
+    "urgent": 1,
+    "high": 0,
+    "moderate": 4,
+    "averageRating": "3.76",
+    "totalReviews": 175
+  },
+  "businesses": [
+    {
+      "name": "Wolseley Plumb & Parts",
+      "rating": 2.5,
+      "reviewCount": 11,
+      "googleMapsUrl": "https://www.google.com/maps/place/Wolseley+Plumb+%26+Parts/data=!4m7!3m6!1s0x4875855053fbfd49:0xff8755240a218edd!8m2!3d50.836285!4d-0.173466!16s%2Fg%2F1w34622r!19sChIJSf37U1CFdUgR3Y4hCiRVh_8?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "HIGH",
+      "urgency": "URGENT",
+      "potentialValue": "HIGH",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T17:36:40.305Z"
+    },
+    {
+      "name": "Brighton - Blocked Drain Services - 247 Drainage UK",
+      "rating": 4,
+      "reviewCount": 12,
+      "googleMapsUrl": "https://www.google.com/maps/place/Brighton+-+Blocked+Drain+Services+-+247+Drainage+UK/data=!4m7!3m6!1s0x487585d65879474f:0x78de3d423f374563!8m2!3d50.9448858!4d-0.0448726!16s%2Fg%2F11cn2mjr20!19sChIJT0d5WNaFdUgRY0U3P0I93ng?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T17:36:21.352Z"
+    },
+    {
+      "name": "Autoglass Brighton",
+      "rating": 4,
+      "reviewCount": 12,
+      "googleMapsUrl": "https://www.google.com/maps/place/Autoglass+Brighton/data=!4m7!3m6!1s0x48758500355d262f:0xd0c4f4cafe8e3d66!8m2!3d50.83786!4d-0.12982!16s%2Fg%2F11vx6kt30g!19sChIJLyZdNQCFdUgRZj2O_sr0xNA?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T17:37:08.921Z"
+    },
+    {
+      "name": "Happy Drains Ltd",
+      "rating": 4.1,
+      "reviewCount": 108,
+      "googleMapsUrl": "https://www.google.com/maps/place/Happy+Drains+Ltd/data=!4m7!3m6!1s0x48759a857c228627:0x30287ef45070656b!8m2!3d50.8350086!4d-0.21973!16s%2Fg%2F12hpc_3m5!19sChIJJ4YifIWadUgRa2VwUPR-KDA?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T17:36:21.351Z"
+    },
+    {
+      "name": "24/7 ️ Dry Tech Roofing",
+      "rating": 4.2,
+      "reviewCount": 32,
+      "googleMapsUrl": "https://www.google.com/maps/place/24%2F7+%EF%B8%8F+Dry+Tech+Roofing/data=!4m7!3m6!1s0x4875e12a6193c19f:0x5d475ad0cdd0d0d9!8m2!3d50.8245924!4d-0.1516426!16s%2Fg%2F11fwgrr1qy!19sChIJn8GTYSrhdUgR2dDQzdBaR10?authuser=0&hl=en&rclk=1",
+      "opportunityLevel": "MILD",
+      "urgency": "MODERATE",
+      "potentialValue": "MILD",
+      "isLowRating": true,
+      "extractedAt": "2025-07-24T17:36:58.858Z"
+    }
+  ]
+}

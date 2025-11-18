@@ -1,0 +1,38 @@
+{
+  "searchDate": "2025-07-23T01:33:35.708Z",
+  "totalLeads": 2,
+  "leads": [
+    {
+      "name": "Teal Construction Company",
+      "rating": 3.7,
+      "reviewCount": 10,
+      "address": "",
+      "phone": "",
+      "website": "Website",
+      "serviceType": "construction companies",
+      "searchLocation": "Houston, Texas",
+      "extractedAt": "2025-07-23T01:32:56.352Z",
+      "searchTarget": {
+        "service": "construction companies",
+        "city": "Houston",
+        "state": "Texas"
+      }
+    },
+    {
+      "name": "J HAN CONSTRUCTION, INC.",
+      "rating": 3.7,
+      "reviewCount": 9,
+      "address": "",
+      "phone": "",
+      "website": "Website",
+      "serviceType": "construction companies",
+      "searchLocation": "Houston, Texas",
+      "extractedAt": "2025-07-23T01:32:56.403Z",
+      "searchTarget": {
+        "service": "construction companies",
+        "city": "Houston",
+        "state": "Texas"
+      }
+    }
+  ]
+}
