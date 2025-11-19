@@ -1,0 +1,193 @@
+<!-- SUBJECT: New Plumbing Project Opportunities in {{city}} -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plumbing Project Opportunities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background: linear-gradient(135deg, #dc2626 0%, #f97316 100%);
+            color: #ffffff;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #dc2626;
+            margin-bottom: 20px;
+        }
+        .main-text {
+            font-size: 16px;
+            color: #4b5563;
+            margin-bottom: 20px;
+        }
+        .highlight-box {
+            background-color: #fef2f2;
+            border-left: 4px solid #dc2626;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .highlight-box h2 {
+            color: #dc2626;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        .highlight-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .highlight-box li {
+            padding: 8px 0;
+            color: #4b5563;
+        }
+        .highlight-box li:before {
+            content: "🔧 ";
+            margin-right: 8px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #dc2626 0%, #f97316 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 16px 40px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 25px 0;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        .button-container {
+            text-align: center;
+        }
+        .footer {
+            background-color: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+        }
+        .footer p {
+            margin: 8px 0;
+        }
+        .unsubscribe {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        .company-info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+        @media only screen and (max-width: 600px) {
+            .content {
+                padding: 25px 20px;
+            }
+            .header h1 {
+                font-size: 24px;
+            }
+            .cta-button {
+                padding: 14px 30px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔧 Plumbing Project Opportunities</h1>
+            <p>Qualified Leads in {{city}}</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <p class="greeting">{{#if firstName}}Hi {{firstName}},{{else}}Hello,{{/if}}</p>
+
+            <p class="main-text">
+                I came across <strong>{{company}}</strong> while researching quality plumbing contractors in the {{city}} area. I wanted to reach out because we have several new project opportunities that might be a great fit for your business.
+            </p>
+
+            <div class="highlight-box">
+                <h2>Current Project Types:</h2>
+                <ul>
+                    <li>Residential plumbing installations and remodels</li>
+                    <li>Commercial property maintenance contracts</li>
+                    <li>Emergency repair service agreements</li>
+                    <li>New construction plumbing projects</li>
+                </ul>
+            </div>
+
+            <p class="main-text">
+                We work with property managers, real estate developers, and homeowners who need reliable plumbing contractors. These are pre-qualified leads actively looking for professional services in the {{city}} area.
+            </p>
+
+            <p class="main-text">
+                Our goal is to connect skilled contractors like yourself with clients who value quality work and are ready to move forward with their projects.
+            </p>
+
+            <div class="button-container">
+                <a href="mailto:reply@example.com?subject=Plumbing Project Leads - {{company}}" class="cta-button">
+                    Get Project Details
+                </a>
+            </div>
+
+            <p class="main-text" style="margin-top: 30px; font-size: 15px;">
+                <strong>Interested in learning more?</strong><br>
+                Reply to this email with your availability, and we'll schedule a quick call to discuss current opportunities in your area.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Plumbing Project Leads</strong></p>
+            <p>Connecting contractors with quality opportunities</p>
+
+            <div class="company-info">
+                <p>Date: {{currentDate}}</p>
+                {{#if email}}<p>Contact: {{email}}</p>{{/if}}
+                {{#if phone}}<p>Phone: {{phone}}</p>{{/if}}
+            </div>
+
+            <p style="margin-top: 20px;">
+                <a href="{{unsubscribeUrl}}" class="unsubscribe">Unsubscribe from future emails</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
