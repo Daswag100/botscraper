@@ -1,0 +1,34 @@
+{
+  "name": "email-campaign-sender",
+  "version": "1.0.0",
+  "description": "Professional bulk email campaign sender using Node.js and Resend API for real estate and other industries",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node index.js --mode test --limit 1",
+    "preview": "node index.js --preview",
+    "dry-run": "node index.js --dry-run"
+  },
+  "keywords": [
+    "email",
+    "campaign",
+    "bulk",
+    "resend",
+    "real-estate",
+    "marketing"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "resend": "^3.0.0",
+    "dotenv": "^16.3.1",
+    "csv-parser": "^3.0.0",
+    "csv-writer": "^1.6.0",
+    "handlebars": "^4.7.8",
+    "commander": "^11.1.0",
+    "cli-progress": "^3.12.0",
+    "validator": "^13.11.0",
+    "chalk": "^5.3.0"
+  }
+}
