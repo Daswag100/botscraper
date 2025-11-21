@@ -366,7 +366,7 @@ class EmailCampaignSender {
           return;
         }
       } else {
-        console.log(chalk.yellow('\n⚠ TEST MODE: All emails will be sent to ' + config.resend.fromEmail));
+        console.log(chalk.yellow('\n⚠ TEST MODE: All emails will be sent to ' + config.gmail.email));
       }
 
       // Run campaign

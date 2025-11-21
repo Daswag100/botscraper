@@ -13,10 +13,10 @@ const __dirname = dirname(__filename);
  * Loads settings from environment variables with sensible defaults
  */
 const config = {
-  // Resend API Configuration
-  resend: {
-    apiKey: process.env.RESEND_API_KEY,
-    fromEmail: process.env.FROM_EMAIL || 'onboarding@resend.dev',
+  // Gmail SMTP Configuration
+  gmail: {
+    email: process.env.GMAIL_EMAIL,
+    appPassword: process.env.GMAIL_APP_PASSWORD,
     fromName: process.env.FROM_NAME || 'Real Estate Opportunities',
   },
 
@@ -73,12 +73,12 @@ const config = {
 export function validateConfig() {
   const errors = [];
 
-  if (!config.resend.apiKey) {
-    errors.push('RESEND_API_KEY is required. Please set it in your .env file.');
+  if (!config.gmail.email) {
+    errors.push('GMAIL_EMAIL is required. Please set it in your .env file.');
   }
 
-  if (!config.resend.fromEmail) {
-    errors.push('FROM_EMAIL is required. Please set it in your .env file.');
+  if (!config.gmail.appPassword) {
+    errors.push('GMAIL_APP_PASSWORD is required. Please set it in your .env file.');
   }
 
   if (errors.length > 0) {
