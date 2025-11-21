@@ -1,18 +1,38 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 import fs from 'fs/promises';
 import Handlebars from 'handlebars';
 import config from './config.js';
 import logger from './logger.js';
 
-// Initialize Resend client
-const resend = new Resend(config.resend.apiKey);
+// Initialize Gmail SMTP transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: config.gmail.email,
+    pass: config.gmail.appPassword,
+  },
+});
 
 /**
- * Email sender class handling Resend API integration
+ * Email sender class handling Gmail SMTP integration
  */
 class EmailSender {
   constructor() {
     this.templateCache = {};
+  }
+
+  /**
+   * Verifies SMTP connection
+   * @returns {Promise<boolean>} Connection status
+   */
+  async verifyConnection() {
+    try {
+      await transporter.verify();
+      return true;
+    } catch (error) {
+      console.error('Gmail SMTP connection failed:', error.message);
+      return false;
+    }
   }
 
   /**
@@ -70,26 +90,26 @@ class EmailSender {
   }
 
   /**
-   * Sends an email via Resend API
+   * Sends an email via Gmail SMTP
    * @param {Object} params - Email parameters
    * @returns {Promise<Object>} Send result
    */
   async send({ to, subject, html, campaignId, templateUsed }) {
-    const fromAddress = `${config.resend.fromName} <${config.resend.fromEmail}>`;
+    const mailOptions = {
+      from: `${config.gmail.fromName} <${config.gmail.email}>`,
+      to: to,
+      subject: subject,
+      html: html,
+    };
 
     try {
-      const response = await resend.emails.send({
-        from: fromAddress,
-        to: to,
-        subject: subject,
-        html: html,
-      });
+      const info = await transporter.sendMail(mailOptions);
 
       // Log success
       await logger.logSuccess({
         recipient_email: to,
         company_name: '',
-        resend_message_id: response.data?.id || '',
+        resend_message_id: info.messageId || '',
         retry_count: 0,
         campaign_id: campaignId,
         template_used: templateUsed,
@@ -97,7 +117,7 @@ class EmailSender {
 
       return {
         success: true,
-        messageId: response.data?.id,
+        messageId: info.messageId,
       };
     } catch (error) {
       throw error;
@@ -131,8 +151,8 @@ class EmailSender {
       } catch (error) {
         lastError = error;
 
-        // Check if it's a rate limit error (429)
-        if (error.statusCode === 429) {
+        // Check if it's a rate limit or temporary error
+        if (error.code === 'ECONNRESET' || error.code === 'ETIMEDOUT' || error.responseCode === 421) {
           const delay = config.campaign.retryDelays[attempt] || 8000;
           await this.sleep(delay);
           continue;
@@ -179,7 +199,7 @@ class EmailSender {
       const subject = subjectTemplate(contact);
 
       // In test mode, override recipient
-      const recipient = mode === 'test' ? config.resend.fromEmail : contact.email;
+      const recipient = mode === 'test' ? config.gmail.email : contact.email;
 
       // Send with retry
       const result = await this.sendWithRetry({
