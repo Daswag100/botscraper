@@ -790,22 +790,26 @@ class ServiceBusinessLeadScraper {
                     console.log(`   ⚠️  No website to extract email from`);
                   }
 
-                  // Add business to results (ALL businesses, with or without emails)
-                  businesses.push({
-                    ...businessInfo,
-                    email: email || '', // Add email field
-                    serviceType: serviceType,
-                    searchLocation: `${city}${state ? ', ' + state : ''}`,
-                    extractedAt: new Date().toISOString()
-                  });
+                  // ONLY save businesses WITH emails when extractEmails is enabled
+                  if (!extractEmails || email) {
+                    businesses.push({
+                      ...businessInfo,
+                      email: email || '', // Add email field
+                      serviceType: serviceType,
+                      searchLocation: `${city}${state ? ', ' + state : ''}`,
+                      extractedAt: new Date().toISOString()
+                    });
 
-                  perfectCount++;
-                  const urgency = businessInfo.rating < 2.0 ? 'CRITICAL' :
-                                 businessInfo.rating < 3.0 ? 'URGENT' : 'HIGH';
+                    perfectCount++;
+                    const urgency = businessInfo.rating < 2.0 ? 'CRITICAL' :
+                                   businessInfo.rating < 3.0 ? 'URGENT' : 'HIGH';
 
-                  console.log(`\n✅ ${urgency} LEAD #${perfectCount}: ${businessInfo.name} (${businessInfo.rating}⭐, ${businessInfo.reviewCount} reviews)`);
-                  console.log(`   Email: ${email || 'Not found'}`);
-                  console.log(`   Status: SAVED TO RESULTS`);
+                    console.log(`\n✅ ${urgency} LEAD #${perfectCount}: ${businessInfo.name} (${businessInfo.rating}⭐, ${businessInfo.reviewCount} reviews)`);
+                    console.log(`   Email: ${email || 'Not extracted'}`);
+                    console.log(`   Status: SAVED TO RESULTS`);
+                  } else {
+                    console.log(`\n✗ SKIPPED: ${businessInfo.name} - No email found (email extraction enabled)`);
+                  }
 
                   // Close the details panel to go back to the list
                   try {
