@@ -23,8 +23,8 @@ let totalScanned = 0;
 let businessesWithEmails = 0;
 let businessesWithoutEmails = 0;
 
-// Maximum number of leads to scrape
-const MAX_LEADS = 100;
+// Maximum number of leads to scrape (increased to 500)
+const MAX_LEADS = 500;
 
 // Handle Ctrl+C gracefully - save data before exiting
 process.on('SIGINT', async () => {
