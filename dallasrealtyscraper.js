@@ -19,6 +19,9 @@ const businessTypes = ['real estate'];
 
 const results = [];
 let isGracefulShutdown = false;
+let totalScanned = 0;
+let businessesWithEmails = 0;
+let businessesWithoutEmails = 0;
 
 // Maximum number of leads to scrape
 const MAX_LEADS = 100;
@@ -718,41 +721,52 @@ async function scrapeGoogleMaps() {
 
             // Save business data
             if (details.name) {
+              totalScanned++;
+
               // If website found but no email, try to extract email from website
               let finalEmail = details.email;
               if (details.website && !finalEmail) {
                 finalEmail = await extractEmailFromWebsite(page, details.website);
               }
 
-              const businessData = {
-                businessName: details.name,
-                phoneNumber: details.phone || 'N/A',
-                address: details.address || 'N/A',
-                rating: details.rating || 'N/A',
-                reviews: details.reviews || 'N/A',
-                website: details.website || 'N/A',
-                email: finalEmail || 'N/A',
-                googleMapsLink: googleMapsLink,
-                businessType: businessType,
-                location: location
-              };
+              // ONLY SAVE if email was found
+              if (finalEmail) {
+                const businessData = {
+                  businessName: details.name,
+                  phoneNumber: details.phone || 'N/A',
+                  address: details.address || 'N/A',
+                  rating: details.rating || 'N/A',
+                  reviews: details.reviews || 'N/A',
+                  website: details.website || 'N/A',
+                  email: finalEmail,
+                  googleMapsLink: googleMapsLink,
+                  businessType: businessType,
+                  location: location
+                };
 
-              results.push(businessData);
-              console.log(`✓ SAVED: ${details.name}`);
-              console.log(`  Phone: ${details.phone || 'N/A'}`);
-              console.log(`  Website: ${details.website || 'N/A'}`);
-              console.log(`  Email: ${finalEmail || 'N/A'}`);
+                results.push(businessData);
+                businessesWithEmails++;
+                console.log(`✓ SAVED: ${details.name} (${businessesWithEmails}/${MAX_LEADS})`);
+                console.log(`  Phone: ${details.phone || 'N/A'}`);
+                console.log(`  Website: ${details.website || 'N/A'}`);
+                console.log(`  Email: ${finalEmail}`);
 
-              // Auto-save progress every 10 businesses
-              if (results.length % 10 === 0) {
-                console.log(`\n📊 Progress checkpoint: ${results.length}/${MAX_LEADS} leads saved`);
-                saveToCsv(true); // Save without final message
-              }
+                // Auto-save progress every 10 businesses
+                if (results.length % 10 === 0) {
+                  console.log(`\n📊 Progress checkpoint: ${results.length}/${MAX_LEADS} leads saved`);
+                  saveToCsv(true); // Save without final message
+                }
 
-              // Check if we've reached the maximum
-              if (results.length >= MAX_LEADS) {
-                console.log(`\n🎯 Reached maximum of ${MAX_LEADS} leads!`);
-                break;
+                // Check if we've reached the maximum
+                if (results.length >= MAX_LEADS) {
+                  console.log(`\n🎯 Reached maximum of ${MAX_LEADS} leads!`);
+                  break;
+                }
+              } else {
+                businessesWithoutEmails++;
+                console.log(`✗ SKIPPED: ${details.name} - No email found (${businessesWithoutEmails} skipped)`);
+                console.log(`  Phone: ${details.phone || 'N/A'}`);
+                console.log(`  Website: ${details.website || 'N/A'}`);
               }
             } else {
               console.log('✗ Could not extract business name');
@@ -800,7 +814,7 @@ async function scrapeGoogleMaps() {
 
 function saveToCsv(isCheckpoint = false) {
   if (results.length === 0) {
-    console.log('\n⚠️  No businesses were found!');
+    console.log('\n⚠️  No businesses with emails were found!');
     return;
   }
 
@@ -816,13 +830,17 @@ function saveToCsv(isCheckpoint = false) {
 
   // Calculate statistics
   const withWebsite = results.filter(r => r.website !== 'N/A').length;
-  const withEmail = results.filter(r => r.email !== 'N/A').length;
+  const emailSuccessRate = totalScanned > 0 ? ((businessesWithEmails / totalScanned) * 100).toFixed(1) : 0;
 
   if (!isCheckpoint) {
     console.log(`\n========================================`);
     console.log(`✓ SUCCESS! Saved ${results.length} businesses to ${filename}`);
-    console.log(`  📊 Businesses with websites: ${withWebsite}`);
-    console.log(`  📧 Businesses with emails: ${withEmail}`);
+    console.log(`\n📊 STATISTICS:`);
+    console.log(`  Total businesses scanned: ${totalScanned}`);
+    console.log(`  ✅ Businesses WITH emails: ${businessesWithEmails} (saved to CSV)`);
+    console.log(`  ❌ Businesses WITHOUT emails: ${businessesWithoutEmails} (skipped)`);
+    console.log(`  📈 Email success rate: ${emailSuccessRate}%`);
+    console.log(`  🌐 Businesses with websites: ${withWebsite}`);
     console.log(`========================================`);
   }
 }
@@ -830,10 +848,12 @@ function saveToCsv(isCheckpoint = false) {
 // Start scraping
 console.log(`
 ╔═══════════════════════════════════════════════════════════╗
-║  🚀 Enhanced Google Maps Scraper with Stealth Mode       ║
+║  🚀 Enhanced Google Maps Scraper with Email Extraction   ║
 ║                                                           ║
 ║  ✅ Puppeteer Stealth Plugin Active                      ║
 ║  ✅ Anti-Detection Measures Enabled                      ║
+║  ✅ Advanced Email Scraping (Website + Contact Pages)    ║
+║  ✅ Only saves businesses WITH emails to CSV             ║
 ║  ✅ Progressive Scrolling (Up to ${MAX_LEADS} leads)            ║
 ║  ✅ Ctrl+C Graceful Shutdown (Saves data before exit)    ║
 ║  ✅ Auto-checkpoint every 10 businesses                  ║
