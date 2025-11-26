@@ -71,6 +71,7 @@ class EmailSender {
         day: 'numeric',
       }),
       unsubscribeUrl: config.urls.unsubscribe,
+      senderEmail: config.gmail.email, // Add sender's email for reply links
     };
 
     return template(templateData);
