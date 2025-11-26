@@ -21,16 +21,32 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// File upload config
+// File upload config - support multiple CSV files (up to 10)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, 'data'));
   },
   filename: (req, file, cb) => {
-    cb(null, 'contacts.csv');
+    // Save each file with timestamp to avoid overwriting
+    const timestamp = Date.now();
+    const originalName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
+    cb(null, `${timestamp}_${originalName}`);
   }
 });
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max per file
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'text/csv' || file.originalname.endsWith('.csv')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only CSV files are allowed'));
+    }
+  }
+});
+
+// Track uploaded CSV files
+let uploadedCsvFiles = [];
 
 // Campaign state
 let campaignState = {
@@ -39,6 +55,32 @@ let campaignState = {
   currentCampaignId: null,
   logs: []
 };
+
+// Helper function to read and merge multiple CSV files
+async function readAndMergeContacts(csvFiles) {
+  const allContacts = [];
+  const seenEmails = new Set();
+
+  for (const csvFile of csvFiles) {
+    try {
+      const filePath = path.join(__dirname, 'data', csvFile);
+      const contacts = await readContacts(filePath);
+
+      // Add unique contacts only (deduplicate by email)
+      for (const contact of contacts) {
+        const emailLower = contact.email.toLowerCase();
+        if (!seenEmails.has(emailLower)) {
+          seenEmails.add(emailLower);
+          allContacts.push(contact);
+        }
+      }
+    } catch (error) {
+      console.error(`Error reading ${csvFile}:`, error.message);
+    }
+  }
+
+  return allContacts;
+}
 
 // API Routes
 
@@ -64,30 +106,68 @@ app.get('/api/templates', async (req, res) => {
   }
 });
 
-// Get contacts from uploaded CSV
+// Get contacts from uploaded CSV files (or default)
 app.get('/api/contacts', async (req, res) => {
   try {
-    const contacts = await readContacts(config.paths.defaultContacts);
+    let contacts;
+    if (uploadedCsvFiles.length > 0) {
+      contacts = await readAndMergeContacts(uploadedCsvFiles);
+    } else {
+      contacts = await readContacts(config.paths.defaultContacts);
+    }
     const stats = getContactStats(contacts);
-    res.json({ contacts, stats, count: contacts.length });
+    res.json({
+      contacts,
+      stats,
+      count: contacts.length,
+      filesLoaded: uploadedCsvFiles.length || 1
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Upload CSV file
-app.post('/api/upload', upload.single('csv'), async (req, res) => {
+// Upload multiple CSV files (up to 10)
+app.post('/api/upload', upload.array('csvFiles', 10), async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'No files uploaded' });
     }
-    const contacts = await readContacts(config.paths.defaultContacts);
+
+    // Store the uploaded filenames
+    uploadedCsvFiles = req.files.map(f => f.filename);
+
+    // Read and merge all contacts
+    const contacts = await readAndMergeContacts(uploadedCsvFiles);
     const stats = getContactStats(contacts);
+
     res.json({
-      message: 'File uploaded successfully',
+      message: `${req.files.length} file(s) uploaded successfully`,
+      filesUploaded: req.files.length,
+      fileNames: req.files.map(f => f.originalname),
       count: contacts.length,
       stats
     });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Clear uploaded files
+app.post('/api/clear-uploads', async (req, res) => {
+  try {
+    // Delete uploaded files
+    for (const file of uploadedCsvFiles) {
+      const filePath = path.join(__dirname, 'data', file);
+      try {
+        await fs.unlink(filePath);
+      } catch (err) {
+        console.error(`Error deleting ${file}:`, err.message);
+      }
+    }
+
+    uploadedCsvFiles = [];
+    res.json({ message: 'Uploaded files cleared' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -97,7 +177,14 @@ app.post('/api/upload', upload.single('csv'), async (req, res) => {
 app.post('/api/preview', async (req, res) => {
   try {
     const { contactIndex, templateName } = req.body;
-    const contacts = await readContacts(config.paths.defaultContacts);
+
+    // Get contacts from uploaded files or default
+    let contacts;
+    if (uploadedCsvFiles.length > 0) {
+      contacts = await readAndMergeContacts(uploadedCsvFiles);
+    } else {
+      contacts = await readContacts(config.paths.defaultContacts);
+    }
 
     if (contactIndex >= contacts.length) {
       return res.status(400).json({ error: 'Invalid contact index' });
@@ -116,7 +203,14 @@ app.post('/api/preview', async (req, res) => {
 app.post('/api/send-test', async (req, res) => {
   try {
     const { templateName } = req.body;
-    const contacts = await readContacts(config.paths.defaultContacts);
+
+    // Get contacts from uploaded files or default
+    let contacts;
+    if (uploadedCsvFiles.length > 0) {
+      contacts = await readAndMergeContacts(uploadedCsvFiles);
+    } else {
+      contacts = await readContacts(config.paths.defaultContacts);
+    }
 
     if (contacts.length === 0) {
       return res.status(400).json({ error: 'No contacts available' });
@@ -146,7 +240,14 @@ app.post('/api/campaign/start', async (req, res) => {
     }
 
     const { templateName, limit = 100, delay = 2000 } = req.body;
-    const contacts = await readContacts(config.paths.defaultContacts);
+
+    // Get contacts from uploaded files or default
+    let contacts;
+    if (uploadedCsvFiles.length > 0) {
+      contacts = await readAndMergeContacts(uploadedCsvFiles);
+    } else {
+      contacts = await readContacts(config.paths.defaultContacts);
+    }
 
     if (contacts.length === 0) {
       return res.status(400).json({ error: 'No contacts available' });
