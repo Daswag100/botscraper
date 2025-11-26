@@ -44,7 +44,7 @@ class EmailCampaignSender {
       .option('--limit <number>', 'Maximum emails to send', (value) => parseInt(value, 10), 100)
       .option('--delay <number>', 'Milliseconds between emails', (value) => parseInt(value, 10), config.campaign.delayBetweenEmails)
       .option('--campaign <id>', 'Campaign identifier for tracking', `campaign_${Date.now()}`)
-      .option('--contacts <path>', 'Path to CSV file', config.paths.defaultContacts)
+      .option('--contacts <paths...>', 'Path(s) to CSV file(s) - can specify multiple files', [config.paths.defaultContacts])
       .option('--template <path>', 'Path to HTML template', config.paths.defaultTemplate)
       .option('--dry-run', 'Preview only, don\'t send emails', false)
       .option('--preview', 'Show rendered HTML for first contact', false)
@@ -96,6 +96,37 @@ class EmailCampaignSender {
     } catch (error) {
       // Ignore errors
     }
+  }
+
+  /**
+   * Read and merge multiple CSV files
+   */
+  async readAndMergeContacts(csvPaths) {
+    const allContacts = [];
+    const seenEmails = new Set();
+
+    for (const csvPath of csvPaths) {
+      try {
+        console.log(chalk.white(`  Reading: ${csvPath}`));
+        await validateCsvFile(csvPath);
+        const contacts = await readContacts(csvPath);
+
+        // Add unique contacts only (deduplicate by email)
+        for (const contact of contacts) {
+          const emailLower = contact.email.toLowerCase();
+          if (!seenEmails.has(emailLower)) {
+            seenEmails.add(emailLower);
+            allContacts.push(contact);
+          }
+        }
+
+        console.log(chalk.green(`  ✓ ${contacts.length} contacts from ${csvPath.split('/').pop()}`));
+      } catch (error) {
+        console.log(chalk.yellow(`  ⚠ Error reading ${csvPath}: ${error.message}`));
+      }
+    }
+
+    return allContacts;
   }
 
   /**
@@ -316,16 +347,20 @@ class EmailCampaignSender {
       }
       console.log(chalk.green('✓ Template valid\n'));
 
-      // Validate and read CSV
+      // Validate and read CSV file(s)
       console.log(chalk.white('📂 Reading contacts...'));
-      await validateCsvFile(options.contacts);
-      const contacts = await readContacts(options.contacts);
+
+      // Ensure options.contacts is an array
+      const csvPaths = Array.isArray(options.contacts) ? options.contacts : [options.contacts];
+      console.log(chalk.white(`  Loading ${csvPaths.length} CSV file(s)...\n`));
+
+      const contacts = await this.readAndMergeContacts(csvPaths);
 
       if (contacts.length === 0) {
-        throw new Error('No valid contacts found in CSV file');
+        throw new Error('No valid contacts found in CSV file(s)');
       }
 
-      console.log(chalk.green(`✓ Loaded ${contacts.length} contacts\n`));
+      console.log(chalk.green(`\n✓ Loaded ${contacts.length} total unique contacts from ${csvPaths.length} file(s)\n`));
 
       // Preview mode
       if (options.preview) {

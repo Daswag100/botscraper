@@ -396,12 +396,17 @@
       <div class="card">
         <h2>Upload Contacts</h2>
 
-        <label>CSV File (must have Email column)</label>
-        <input type="file" id="csvFile" accept=".csv">
+        <label>CSV Files (up to 10 files - must have Email column)</label>
+        <input type="file" id="csvFile" accept=".csv" multiple>
+        <p style="color: #888; font-size: 0.85rem; margin-top: 5px;">
+          Select multiple files to combine contacts from different sources
+        </p>
 
-        <button class="btn btn-secondary" onclick="uploadCSV()">Upload CSV</button>
+        <button class="btn btn-secondary" onclick="uploadCSV()">Upload CSV(s)</button>
+        <button class="btn btn-secondary" onclick="clearUploads()" style="margin-top: 10px;">Clear Uploads</button>
 
         <div id="contactStats" style="margin-top: 20px;">
+          <p>Files Loaded: <strong id="filesLoaded">0</strong></p>
           <p>Contacts: <strong id="contactCount">0</strong></p>
           <p>With Phone: <strong id="withPhone">0</strong></p>
           <p>With Website: <strong id="withWebsite">0</strong></p>
@@ -536,6 +541,7 @@
         const res = await fetch(`${API_BASE}/api/contacts`);
         const data = await res.json();
 
+        document.getElementById('filesLoaded').textContent = data.filesLoaded || 1;
         document.getElementById('contactCount').textContent = data.count;
         document.getElementById('withPhone').textContent = data.stats.withPhone;
         document.getElementById('withWebsite').textContent = data.stats.withWebsite;
@@ -560,16 +566,23 @@
       }
     }
 
-    // Upload CSV
+    // Upload multiple CSV files
     async function uploadCSV() {
       const fileInput = document.getElementById('csvFile');
-      if (!fileInput.files[0]) {
-        showAlert('Please select a CSV file', 'error');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        showAlert('Please select at least one CSV file', 'error');
+        return;
+      }
+
+      if (fileInput.files.length > 10) {
+        showAlert('Maximum 10 files allowed', 'error');
         return;
       }
 
       const formData = new FormData();
-      formData.append('csv', fileInput.files[0]);
+      for (let i = 0; i < fileInput.files.length; i++) {
+        formData.append('csvFiles', fileInput.files[i]);
+      }
 
       try {
         const res = await fetch(`${API_BASE}/api/upload`, {
@@ -583,10 +596,35 @@
           return;
         }
 
-        showAlert(`Uploaded ${data.count} contacts`);
+        showAlert(`Uploaded ${data.filesUploaded} file(s) with ${data.count} total contacts`);
+        document.getElementById('filesLoaded').textContent = data.filesUploaded;
         loadContacts();
       } catch (err) {
-        showAlert('Upload failed', 'error');
+        showAlert('Upload failed: ' + err.message, 'error');
+      }
+    }
+
+    // Clear uploaded files
+    async function clearUploads() {
+      try {
+        const res = await fetch(`${API_BASE}/api/clear-uploads`, {
+          method: 'POST'
+        });
+        const data = await res.json();
+
+        if (data.error) {
+          showAlert(data.error, 'error');
+          return;
+        }
+
+        showAlert('Uploaded files cleared');
+        document.getElementById('csvFile').value = '';
+        document.getElementById('filesLoaded').textContent = '0';
+        document.getElementById('contactCount').textContent = '0';
+        document.getElementById('withPhone').textContent = '0';
+        document.getElementById('withWebsite').textContent = '0';
+      } catch (err) {
+        showAlert('Clear failed: ' + err.message, 'error');
       }
     }
 
