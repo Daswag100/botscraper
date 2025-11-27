@@ -8,12 +8,9 @@ puppeteerExtra.use(StealthPlugin());
 
 const locations = [
   
-  'Gbadaga, Lagos',
-  'Surulere, Lagos',
-  'Shomolu, Lagos',
-  'Yaba, Lagos',
+  
   'Ikeja, Lagos',
-  'Bariga, Lagos',
+ 
   'Ikoyi, Lagos',
   'Victoria Island, Lagos',
   'Lekki, Lagos',
@@ -25,7 +22,7 @@ const locations = [
   
 ];
 
-const businessTypes = ['real estate agents'];
+const businessTypes = ['tech startup', 'IT company', 'software development company'];
 
 const results = [];
 const scrapedUrls = new Set();

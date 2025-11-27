@@ -1,3 +1,5 @@
+
+
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const fs = require('fs');
@@ -7,33 +9,23 @@ puppeteer.use(StealthPlugin());
 
 // Configure your search parameters
 const locations = [
-  
-  
-  'Texas, Usa',
-  'alabama, Usa',
-  'chicago, Usa',
-  'virginia, Usa'
-  
-  ,
+  'Dallas, Usa',
+  'New York, Usa',
+  'San Francisco, Usa',
   
   // Add more locations as needed
 ];
 
-const businessTypes = ['Restaurant'];
+const businessTypes = ['investment company', 'Financial Services Company', 'Insurance Company'];
 
 const results = [];
 let isGracefulShutdown = false;
 let totalScanned = 0;
 let businessesWithEmails = 0;
 let businessesWithoutEmails = 0;
-let businessesFilteredByRating = 0;
 
 // Maximum number of leads to scrape (increased to 500)
 const MAX_LEADS = 500;
-
-// Rating filter: only scrape businesses with ratings between 2.0 and 4.3
-const MIN_RATING = 2.0;
-const MAX_RATING = 4.3;
 
 // Handle Ctrl+C gracefully - save data before exiting
 process.on('SIGINT', async () => {
@@ -674,22 +666,6 @@ async function scrapeGoogleMaps() {
             if (details.name) {
               totalScanned++;
 
-              // RATING FILTER: Check if rating is between 2.0 and 4.3
-              let ratingValue = null;
-              if (details.rating) {
-                // Parse rating (e.g., "4.2" -> 4.2)
-                ratingValue = parseFloat(details.rating.replace(',', '.'));
-              }
-
-              // Skip if rating is outside our target range
-              if (!ratingValue || ratingValue < MIN_RATING || ratingValue > MAX_RATING) {
-                businessesFilteredByRating++;
-                console.log(`✗ FILTERED: ${details.name} - Rating ${details.rating || 'N/A'} is outside ${MIN_RATING}-${MAX_RATING} range (${businessesFilteredByRating} filtered)`);
-                continue;
-              }
-
-              console.log(`✓ Rating ${details.rating} is within target range (${MIN_RATING}-${MAX_RATING})`);
-
               // If website found but no email, try to extract email from website
               let finalEmail = details.email;
               if (details.website && !finalEmail) {
@@ -714,7 +690,6 @@ async function scrapeGoogleMaps() {
                 results.push(businessData);
                 businessesWithEmails++;
                 console.log(`✓ SAVED: ${details.name} (${businessesWithEmails}/${MAX_LEADS})`);
-                console.log(`  Rating: ${details.rating || 'N/A'}`);
                 console.log(`  Phone: ${details.phone || 'N/A'}`);
                 console.log(`  Website: ${details.website || 'N/A'}`);
                 console.log(`  Email: ${finalEmail}`);
@@ -733,7 +708,6 @@ async function scrapeGoogleMaps() {
               } else {
                 businessesWithoutEmails++;
                 console.log(`✗ SKIPPED: ${details.name} - No email found (${businessesWithoutEmails} skipped)`);
-                console.log(`  Rating: ${details.rating || 'N/A'}`);
                 console.log(`  Phone: ${details.phone || 'N/A'}`);
                 console.log(`  Website: ${details.website || 'N/A'}`);
               }
@@ -783,7 +757,7 @@ async function scrapeGoogleMaps() {
 
 function saveToCsv(isCheckpoint = false) {
   if (results.length === 0) {
-    console.log('\n⚠️  No restaurants with emails were found!');
+    console.log('\n⚠️  No businesses with emails were found!');
     return;
   }
 
@@ -793,7 +767,7 @@ function saveToCsv(isCheckpoint = false) {
   ).join('\n');
 
   const csv = csvHeader + csvRows;
-  const filename = `restaurants_${MIN_RATING}-${MAX_RATING}_stars_${Date.now()}.csv`;
+  const filename = `dallas_realty_businesses_${Date.now()}.csv`;
 
   fs.writeFileSync(filename, csv);
 
@@ -803,14 +777,13 @@ function saveToCsv(isCheckpoint = false) {
 
   if (!isCheckpoint) {
     console.log(`\n========================================`);
-    console.log(`✓ SUCCESS! Saved ${results.length} restaurants to ${filename}`);
+    console.log(`✓ SUCCESS! Saved ${results.length} businesses to ${filename}`);
     console.log(`\n📊 STATISTICS:`);
     console.log(`  Total businesses scanned: ${totalScanned}`);
-    console.log(`  ⭐ Filtered by rating (outside ${MIN_RATING}-${MAX_RATING}): ${businessesFilteredByRating}`);
-    console.log(`  ✅ Restaurants WITH emails: ${businessesWithEmails} (saved to CSV)`);
-    console.log(`  ❌ Restaurants WITHOUT emails: ${businessesWithoutEmails} (skipped)`);
+    console.log(`  ✅ Businesses WITH emails: ${businessesWithEmails} (saved to CSV)`);
+    console.log(`  ❌ Businesses WITHOUT emails: ${businessesWithoutEmails} (skipped)`);
     console.log(`  📈 Email success rate: ${emailSuccessRate}%`);
-    console.log(`  🌐 Restaurants with websites: ${withWebsite}`);
+    console.log(`  🌐 Businesses with websites: ${withWebsite}`);
     console.log(`========================================`);
   }
 }
@@ -818,13 +791,12 @@ function saveToCsv(isCheckpoint = false) {
 // Start scraping
 console.log(`
 ╔═══════════════════════════════════════════════════════════╗
-║  🚀 Restaurant Email Scraper (${MIN_RATING}-${MAX_RATING} Stars)          ║
+║  🚀 Enhanced Google Maps Scraper with Email Extraction   ║
 ║                                                           ║
 ║  ✅ Puppeteer Stealth Plugin Active                      ║
 ║  ✅ Anti-Detection Measures Enabled                      ║
-║  ✅ Rating Filter: ${MIN_RATING} - ${MAX_RATING} stars only              ║
 ║  ✅ Advanced Email Scraping (Website + Contact Pages)    ║
-║  ✅ Only saves restaurants WITH emails to CSV            ║
+║  ✅ Only saves businesses WITH emails to CSV             ║
 ║  ✅ Progressive Scrolling (Up to ${MAX_LEADS} leads)            ║
 ║  ✅ Ctrl+C Graceful Shutdown (Saves data before exit)    ║
 ║  ✅ Auto-checkpoint every 10 businesses                  ║

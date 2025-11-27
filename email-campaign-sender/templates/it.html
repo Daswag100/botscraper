@@ -1,0 +1,193 @@
+<!-- SUBJECT: Scaling {{company}}'s Growth in {{city}} -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Growth Opportunities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: #ffffff;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #3b82f6;
+            margin-bottom: 20px;
+        }
+        .main-text {
+            font-size: 16px;
+            color: #4b5563;
+            margin-bottom: 20px;
+        }
+        .highlight-box {
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .highlight-box h2 {
+            color: #3b82f6;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        .highlight-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .highlight-box li {
+            padding: 8px 0;
+            color: #4b5563;
+        }
+        .highlight-box li:before {
+            content: "🚀 ";
+            margin-right: 8px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 16px 40px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 25px 0;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        .button-container {
+            text-align: center;
+        }
+        .footer {
+            background-color: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+        }
+        .footer p {
+            margin: 8px 0;
+        }
+        .unsubscribe {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        .company-info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+        @media only screen and (max-width: 600px) {
+            .content {
+                padding: 25px 20px;
+            }
+            .header h1 {
+                font-size: 24px;
+            }
+            .cta-button {
+                padding: 14px 30px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚀 Scale Your Tech Startup</h1>
+            <p>Growth Opportunities in {{city}}</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <p class="greeting">{{#if firstName}}Hi {{firstName}},{{else}}Hello,{{/if}}</p>
+
+            <p class="main-text">
+                I've been following the tech ecosystem in {{city}} and came across <strong>{{company}}</strong>. Your work caught my attention, and I wanted to reach out about some opportunities that could accelerate your growth trajectory.
+            </p>
+
+            <div class="highlight-box">
+                <h2>Why This Matters for Your Startup:</h2>
+                <ul>
+                    <li>Access to pre-vetted enterprise clients actively seeking solutions</li>
+                    <li>Strategic partnerships with industry leaders in {{city}}</li>
+                    <li>Funding connections and investor introductions</li>
+                    <li>Scale your customer acquisition without burning capital</li>
+                </ul>
+            </div>
+
+            <p class="main-text">
+                We specialize in connecting innovative tech startups with qualified B2B opportunities and strategic growth channels. We work exclusively with companies that have proven product-market fit and are ready to scale.
+            </p>
+
+            <p class="main-text">
+                Our network in the {{city}} tech scene includes enterprise decision-makers, venture partners, and growth-stage companies looking for solutions exactly like yours. These aren't cold leads—they're warm introductions with real budgets and immediate needs.
+            </p>
+
+            <div class="button-container">
+                <a href="mailto:reply@example.com?subject=Growth Opportunities - {{company}}" class="cta-button">
+                    Explore Partnership Opportunities
+                </a>
+            </div>
+
+            <p class="main-text" style="margin-top: 30px; font-size: 15px;">
+                <strong>Ready to accelerate your growth?</strong><br>
+                Simply reply to this email or click above, and we'll schedule a brief call to discuss how we can support {{company}}'s expansion goals.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Tech Growth Partners</strong></p>
+            <p>Connecting startups with enterprise opportunities</p>
+
+            <div class="company-info">
+                <p>Date: {{currentDate}}</p>
+                {{#if email}}<p>Contact: {{email}}</p>{{/if}}
+                {{#if phone}}<p>Phone: {{phone}}</p>{{/if}}
+            </div>
+
+            <p style="margin-top: 20px;">
+                <a href="{{unsubscribeUrl}}" class="unsubscribe">Unsubscribe from future emails</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,5 +1,4 @@
-// Enhanced Google Maps Scraper with Stealth Mode & Graceful Exit
-// Features: Progressive scrolling, Ctrl+C handling, anti-bot detection
+
 
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
@@ -10,12 +9,16 @@ puppeteer.use(StealthPlugin());
 
 // Configure your search parameters
 const locations = [
-  'Dallas, Usa',
+  'Ikeja, Lagos',
+  'Lekki, Lagos',
+  'Ikoyi, Lagos'
+  
+  ,
   
   // Add more locations as needed
 ];
 
-const businessTypes = ['real estate'];
+const businessTypes = ['investment company', 'survey company', 'Insurance Company'];
 
 const results = [];
 let isGracefulShutdown = false;
@@ -49,8 +52,8 @@ async function extractEmailFromWebsite(page, websiteUrl) {
   if (!websiteUrl) return null;
 
   // Contact page paths to try in order
-  const contactPaths = ['', '/contact', '/contact-us', '/get-in-touch', '/about', '/about-us'];
-  const maxRetries = 2;
+  const contactPaths = ['',];
+  const maxRetries = 1;
 
   // Helper function to extract email from current page with improved detection
   const extractEmailFromCurrentPage = async (pageName) => {
@@ -135,64 +138,6 @@ async function extractEmailFromWebsite(page, websiteUrl) {
           }
         }
 
-        // Priority 4: Check data attributes
-        const elementsWithData = document.querySelectorAll('[data-email], [data-mail]');
-        for (const el of elementsWithData) {
-          const dataEmail = el.getAttribute('data-email') || el.getAttribute('data-mail');
-          if (dataEmail && emailRegex.test(dataEmail)) {
-            return { email: dataEmail, source: 'data attribute' };
-          }
-        }
-
-        // Priority 5: Check aria-label attributes across the page
-        const elementsWithAria = document.querySelectorAll('[aria-label]');
-        for (const el of elementsWithAria) {
-          const ariaLabel = el.getAttribute('aria-label');
-          const ariaMatch = ariaLabel.match(emailRegex);
-          if (ariaMatch) {
-            return { email: ariaMatch[0], source: 'aria-label' };
-          }
-        }
-
-        // Priority 6: Check buttons with "contact", "talk", "connect" text
-        const contactButtons = document.querySelectorAll('button, a, [role="button"]');
-        for (const btn of contactButtons) {
-          const text = (btn.innerText || '').toLowerCase();
-          if (text.includes('contact') || text.includes('talk') || text.includes('connect') || text.includes('email')) {
-            const btnText = btn.innerText || btn.textContent || '';
-            const btnMatch = btnText.match(emailRegex);
-            if (btnMatch) {
-              const validEmail = btnMatch.find(e =>
-                !e.includes('example.com') &&
-                !e.includes('test.com') &&
-                !e.includes('sentry.') &&
-                !e.includes('noreply') &&
-                !e.includes('wixpress.') &&
-                !e.includes('placeholder')
-              );
-              if (validEmail) return { email: validEmail, source: 'contact button' };
-            }
-          }
-        }
-
-        // Priority 7: Check entire page content as last resort
-        const bodyText = document.body.innerText || document.body.textContent || '';
-        const emailMatches = bodyText.match(emailRegex);
-
-        if (emailMatches && emailMatches.length > 0) {
-          const validEmails = emailMatches.filter(e =>
-            !e.includes('example.com') &&
-            !e.includes('test.com') &&
-            !e.includes('sentry.') &&
-            !e.includes('noreply') &&
-            !e.includes('wixpress.') &&
-            !e.includes('placeholder')
-          );
-
-          if (validEmails.length > 0) {
-            return { email: validEmails[0], source: 'page body' };
-          }
-        }
 
         return null;
       });
