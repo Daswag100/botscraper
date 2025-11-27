@@ -60,7 +60,7 @@ class EmailSender {
    * Renders template with contact data
    * @param {Function} template - Compiled template
    * @param {Object} contact - Contact data
-   * @returns {string} Rendered HTML
+   * @returns {string} Rendered HTML or text
    */
   renderTemplate(template, contact) {
     const templateData = {
@@ -72,22 +72,49 @@ class EmailSender {
       }),
       unsubscribeUrl: config.urls.unsubscribe,
       senderEmail: config.gmail.email, // Add sender's email for reply links
+      senderName: config.gmail.senderName || config.gmail.fromName, // Add sender name
     };
 
     return template(templateData);
   }
 
   /**
-   * Extracts subject from HTML template
-   * @param {string} html - HTML content
+   * Extracts subject from template (supports both HTML and plain text)
+   * @param {string} content - Template content
    * @returns {string} Subject line
    */
-  extractSubject(html) {
-    const match = html.match(/<!--\s*SUBJECT:\s*(.+?)\s*-->/i);
-    if (match) {
-      return match[1].trim();
+  extractSubject(content) {
+    // Try HTML comment format: <!-- SUBJECT: ... -->
+    const htmlMatch = content.match(/<!--\s*SUBJECT:\s*(.+?)\s*-->/i);
+    if (htmlMatch) {
+      return htmlMatch[1].trim();
     }
+
+    // Try plain text format: SUBJECT: ... (first line)
+    const textMatch = content.match(/^SUBJECT:\s*(.+?)$/im);
+    if (textMatch) {
+      return textMatch[1].trim();
+    }
+
     return 'Important Message';
+  }
+
+  /**
+   * Determines if template is plain text based on file extension
+   * @param {string} templatePath - Path to template file
+   * @returns {boolean} True if plain text template
+   */
+  isPlainTextTemplate(templatePath) {
+    return templatePath.endsWith('.txt');
+  }
+
+  /**
+   * Removes subject line from plain text template content
+   * @param {string} content - Template content
+   * @returns {string} Content without subject line
+   */
+  removeSubjectLine(content) {
+    return content.replace(/^SUBJECT:\s*.+?\n\n?/im, '').trim();
   }
 
   /**
@@ -95,13 +122,19 @@ class EmailSender {
    * @param {Object} params - Email parameters
    * @returns {Promise<Object>} Send result
    */
-  async send({ to, subject, html, campaignId, templateUsed }) {
+  async send({ to, subject, html, text, campaignId, templateUsed }) {
     const mailOptions = {
       from: `${config.gmail.fromName} <${config.gmail.email}>`,
       to: to,
       subject: subject,
-      html: html,
     };
+
+    // Use text for plain text emails, html for HTML emails
+    if (text) {
+      mailOptions.text = text;
+    } else if (html) {
+      mailOptions.html = html;
+    }
 
     try {
       const info = await transporter.sendMail(mailOptions);
@@ -140,6 +173,7 @@ class EmailSender {
           to: contact.email,
           subject: params.subject,
           html: params.html,
+          text: params.text,
           campaignId,
           templateUsed,
         });
@@ -192,12 +226,27 @@ class EmailSender {
       // Load and compile template
       const template = await this.loadTemplate(templatePath);
 
-      // Render HTML
-      const html = this.renderTemplate(template, contact);
+      // Check if it's a plain text template
+      const isPlainText = this.isPlainTextTemplate(templatePath);
+
+      // Render content (HTML or plain text)
+      const renderedContent = this.renderTemplate(template, contact);
 
       // Extract subject (with Handlebars variables rendered)
-      const subjectTemplate = Handlebars.compile(this.extractSubject(html));
+      const subjectTemplate = Handlebars.compile(this.extractSubject(renderedContent));
       const subject = subjectTemplate(contact);
+
+      // Prepare email content
+      let html = null;
+      let text = null;
+
+      if (isPlainText) {
+        // For plain text templates, remove subject line and use as text
+        text = this.removeSubjectLine(renderedContent);
+      } else {
+        // For HTML templates, use as html
+        html = renderedContent;
+      }
 
       // In test mode, override recipient
       const recipient = mode === 'test' ? config.gmail.email : contact.email;
@@ -207,6 +256,7 @@ class EmailSender {
         contact: { ...contact, email: recipient },
         subject,
         html,
+        text,
         campaignId,
         templateUsed: templatePath,
       });
@@ -241,16 +291,26 @@ class EmailSender {
    */
   async preview(contact, templatePath) {
     const template = await this.loadTemplate(templatePath);
-    const html = this.renderTemplate(template, contact);
-    const subjectTemplate = Handlebars.compile(this.extractSubject(html));
+    const isPlainText = this.isPlainTextTemplate(templatePath);
+    const renderedContent = this.renderTemplate(template, contact);
+    const subjectTemplate = Handlebars.compile(this.extractSubject(renderedContent));
     const subject = subjectTemplate(contact);
 
-    return {
+    const previewData = {
       to: contact.email,
       subject,
-      html,
       contact,
     };
+
+    if (isPlainText) {
+      previewData.text = this.removeSubjectLine(renderedContent);
+      previewData.isPlainText = true;
+    } else {
+      previewData.html = renderedContent;
+      previewData.isPlainText = false;
+    }
+
+    return previewData;
   }
 
   /**

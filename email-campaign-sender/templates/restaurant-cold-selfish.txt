@@ -1,0 +1,25 @@
+SUBJECT: {{company}} - I did something for you (selfish reasons)
+
+Hey {{firstName}},
+
+I help restaurants rank higher on Google and get more customers through better reviews and local SEO.
+
+Honestly, I'm messaging you for selfish reasons...
+
+I'm looking to expand my reach among restaurant owners in {{city}} and I want to add {{company}} to my portfolio.
+
+I'm being selfish because I want you as my next case study.
+
+I've already analyzed your Google listing and created a ranking strategy for you that I think can help you get more customers and increase revenue.
+
+Here's what I found for {{company}}:
+- Your {{rating}}⭐ rating is holding you back from top rankings
+- 3 quick GMB optimizations that'll boost visibility 40-60%
+- Exact review strategy your competitors are using to outrank you
+- 30-day action plan to hit 4.5+ stars
+
+Let me know if you want to take a look!
+
+Talk soon,
+{{senderName}}
+{{senderEmail}}

@@ -18,6 +18,7 @@ const config = {
     email: process.env.GMAIL_EMAIL,
     appPassword: process.env.GMAIL_APP_PASSWORD,
     fromName: process.env.FROM_NAME || 'Real Estate Opportunities',
+    senderName: process.env.SENDER_NAME || process.env.FROM_NAME || 'Your Growth Partner',
   },
 
   // Email Campaign Settings
