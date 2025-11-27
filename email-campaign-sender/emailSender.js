@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import Handlebars from 'handlebars';
 import config from './config.js';
 import logger from './logger.js';
+import unsubscribeManager from './unsubscribeManager.js';
 
 // Initialize Gmail SMTP transporter
 const transporter = nodemailer.createTransport({
@@ -60,9 +61,15 @@ class EmailSender {
    * Renders template with contact data
    * @param {Function} template - Compiled template
    * @param {Object} contact - Contact data
+   * @param {string} campaignId - Campaign ID for token generation
    * @returns {string} Rendered HTML or text
    */
-  renderTemplate(template, contact) {
+  renderTemplate(template, contact, campaignId = '') {
+    // Generate unique unsubscribe token for this email
+    const unsubscribeToken = unsubscribeManager.generateToken(contact.email, campaignId);
+    const baseUrl = config.urls.baseUrl || 'http://localhost:3000';
+    const unsubscribeLink = `${baseUrl}/api/unsubscribe/${unsubscribeToken}`;
+
     const templateData = {
       ...contact,
       currentDate: new Date().toLocaleDateString('en-US', {
@@ -70,7 +77,8 @@ class EmailSender {
         month: 'long',
         day: 'numeric',
       }),
-      unsubscribeUrl: config.urls.unsubscribe,
+      unsubscribeUrl: unsubscribeLink,
+      unsubscribeLink: unsubscribeLink, // Alternative name for clarity
       senderEmail: config.gmail.email, // Add sender's email for reply links
       senderName: config.gmail.senderName || config.gmail.fromName, // Add sender name
     };
@@ -223,14 +231,32 @@ class EmailSender {
     const { contact, templatePath, campaignId, mode } = params;
 
     try {
+      // Check if email is unsubscribed
+      if (unsubscribeManager.isUnsubscribed(contact.email)) {
+        await logger.logSkipped({
+          recipient_email: contact.email,
+          company_name: contact.company,
+          reason: 'Unsubscribed',
+          campaign_id: campaignId,
+          template_used: templatePath,
+        });
+
+        return {
+          success: false,
+          skipped: true,
+          reason: 'Email address has unsubscribed',
+          contact,
+        };
+      }
+
       // Load and compile template
       const template = await this.loadTemplate(templatePath);
 
       // Check if it's a plain text template
       const isPlainText = this.isPlainTextTemplate(templatePath);
 
-      // Render content (HTML or plain text)
-      const renderedContent = this.renderTemplate(template, contact);
+      // Render content (HTML or plain text) with campaign ID for token generation
+      const renderedContent = this.renderTemplate(template, contact, campaignId);
 
       // Extract subject (with Handlebars variables rendered)
       const subjectTemplate = Handlebars.compile(this.extractSubject(renderedContent));
@@ -292,7 +318,7 @@ class EmailSender {
   async preview(contact, templatePath) {
     const template = await this.loadTemplate(templatePath);
     const isPlainText = this.isPlainTextTemplate(templatePath);
-    const renderedContent = this.renderTemplate(template, contact);
+    const renderedContent = this.renderTemplate(template, contact, 'preview');
     const subjectTemplate = Handlebars.compile(this.extractSubject(renderedContent));
     const subject = subjectTemplate(contact);
 

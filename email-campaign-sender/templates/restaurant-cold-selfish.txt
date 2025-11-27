@@ -23,3 +23,6 @@ Let me know if you want to take a look!
 Talk soon,
 {{senderName}}
 {{senderEmail}}
+
+---
+Not interested? Unsubscribe: {{unsubscribeLink}}

@@ -9,6 +9,7 @@ import config, { validateConfig } from './config.js';
 import { readContacts, getContactStats } from './csvReader.js';
 import emailSender from './emailSender.js';
 import logger from './logger.js';
+import unsubscribeManager from './unsubscribeManager.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -338,6 +339,16 @@ async function runCampaign(contacts, templatePath, campaignId, delay) {
         messageId: result.messageId,
         timestamp: new Date().toISOString()
       });
+    } else if (result.skipped) {
+      // Handle unsubscribed emails
+      campaignState.progress.skipped++;
+      campaignState.logs.push({
+        email: contact.email,
+        company: contact.company,
+        status: 'skipped',
+        reason: result.reason || 'Unsubscribed',
+        timestamp: new Date().toISOString()
+      });
     } else {
       campaignState.progress.failed++;
       campaignState.logs.push({
@@ -388,6 +399,96 @@ app.get('/api/stats', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Get email address from unsubscribe token (for preview)
+app.get('/api/unsubscribe/:token/info', (req, res) => {
+  try {
+    const { token } = req.params;
+    const email = unsubscribeManager.getEmailFromToken(token);
+
+    if (!email) {
+      return res.status(404).json({
+        success: false,
+        message: 'Invalid or expired token'
+      });
+    }
+
+    res.json({
+      success: true,
+      email: email
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// Unsubscribe endpoint - serves HTML page
+app.get('/api/unsubscribe/:token', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'unsubscribe.html'));
+});
+
+// Process unsubscribe request
+app.post('/api/unsubscribe/:token', (req, res) => {
+  try {
+    const { token } = req.params;
+    const email = unsubscribeManager.getEmailFromToken(token);
+
+    if (!email) {
+      return res.status(404).json({
+        success: false,
+        message: 'Invalid or expired unsubscribe token'
+      });
+    }
+
+    // Get IP and user agent for logging
+    const ipAddress = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+    const userAgent = req.headers['user-agent'] || 'unknown';
+
+    // Unsubscribe the email
+    const success = unsubscribeManager.unsubscribe(email, token, ipAddress, userAgent);
+
+    if (success) {
+      res.json({
+        success: true,
+        message: 'Successfully unsubscribed',
+        email: email
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to process unsubscribe request'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// Get unsubscribe statistics
+app.get('/api/unsubscribe/stats', (req, res) => {
+  try {
+    const stats = unsubscribeManager.getStats();
+    const allUnsubscribed = unsubscribeManager.getAllUnsubscribed();
+
+    res.json({
+      success: true,
+      stats,
+      count: allUnsubscribed.length,
+      emails: allUnsubscribed
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 });
 
