@@ -95,9 +95,11 @@ app.get('/api/templates', async (req, res) => {
     const templatesDir = config.paths.templates;
     const files = await fs.readdir(templatesDir);
     const templates = files
-      .filter(f => f.endsWith('.html'))
+      .filter(f => f.endsWith('.html') || f.endsWith('.txt'))
       .map(f => ({
-        name: f.replace('.html', ''),
+        name: f.replace(/\.(html|txt)$/, ''),
+        filename: f,
+        type: f.endsWith('.txt') ? 'text' : 'html',
         path: path.join(templatesDir, f)
       }));
     res.json(templates);
@@ -190,7 +192,8 @@ app.post('/api/preview', async (req, res) => {
       return res.status(400).json({ error: 'Invalid contact index' });
     }
 
-    const templatePath = path.join(config.paths.templates, `${templateName}.html`);
+    // Template name should include extension (.html or .txt)
+    const templatePath = path.join(config.paths.templates, templateName);
     const preview = await emailSender.preview(contacts[contactIndex], templatePath);
 
     res.json(preview);
@@ -216,7 +219,8 @@ app.post('/api/send-test', async (req, res) => {
       return res.status(400).json({ error: 'No contacts available' });
     }
 
-    const templatePath = path.join(config.paths.templates, `${templateName}.html`);
+    // Template name should include extension (.html or .txt)
+    const templatePath = path.join(config.paths.templates, templateName);
     const campaignId = `test_${Date.now()}`;
 
     const result = await emailSender.sendToContact({
@@ -253,7 +257,8 @@ app.post('/api/campaign/start', async (req, res) => {
       return res.status(400).json({ error: 'No contacts available' });
     }
 
-    const templatePath = path.join(config.paths.templates, `${templateName}.html`);
+    // Template name should include extension (.html or .txt)
+    const templatePath = path.join(config.paths.templates, templateName);
     const campaignId = `campaign_${Date.now()}`;
 
     // Reset state
