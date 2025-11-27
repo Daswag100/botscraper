@@ -1,0 +1,376 @@
+<!-- SUBJECT: {{firstName}} - Are you leaving money on the table in {{city}}? -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grow Your Restaurant's Online Presence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.7;
+            color: #1f2937;
+            background-color: #f9fafb;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: #ffffff;
+            padding: 35px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+        .content {
+            padding: 35px 30px;
+        }
+        .greeting {
+            font-size: 17px;
+            color: #111827;
+            margin-bottom: 20px;
+        }
+        .main-text {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 18px;
+            line-height: 1.7;
+        }
+        .current-status {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-left: 4px solid #0ea5e9;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .current-status .rating-display {
+            font-size: 32px;
+            font-weight: 800;
+            color: #0369a1;
+            margin-bottom: 8px;
+        }
+        .current-status p {
+            color: #075985;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .opportunity-box {
+            background-color: #ecfdf5;
+            border: 2px solid #10b981;
+            padding: 22px;
+            margin: 25px 0;
+            border-radius: 6px;
+        }
+        .opportunity-box h3 {
+            color: #065f46;
+            font-size: 19px;
+            margin-bottom: 15px;
+        }
+        .opportunity-box p {
+            color: #047857;
+            font-size: 15px;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 10px 0;
+            border-bottom: 1px solid #d1fae5;
+        }
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        .stat-row .label {
+            color: #065f46;
+            font-weight: 600;
+        }
+        .stat-row .value {
+            color: #059669;
+            font-weight: 700;
+        }
+        .solution-box {
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 6px;
+        }
+        .solution-box h2 {
+            color: #1f2937;
+            font-size: 20px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 10px;
+        }
+        .solution-box .service {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 4px;
+        }
+        .solution-box .service h3 {
+            color: #2563eb;
+            font-size: 17px;
+            margin-bottom: 8px;
+        }
+        .solution-box .service p {
+            color: #4b5563;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .results-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .results-list li {
+            padding: 10px 0 10px 30px;
+            position: relative;
+            color: #374151;
+            font-size: 15px;
+        }
+        .results-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 18px 45px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 25px 0;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .proof-section {
+            background-color: #fffbeb;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 6px;
+            border-left: 4px solid #f59e0b;
+        }
+        .proof-section .quote {
+            font-style: italic;
+            color: #78350f;
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+        .proof-section .author {
+            color: #92400e;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .proof-section .result {
+            color: #d97706;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+        .footer {
+            background-color: #f9fafb;
+            padding: 25px 30px;
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+        }
+        .footer p {
+            margin: 6px 0;
+        }
+        .unsubscribe {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        @media only screen and (max-width: 600px) {
+            .content {
+                padding: 25px 20px;
+            }
+            .current-status .rating-display {
+                font-size: 24px;
+            }
+            .cta-button {
+                padding: 16px 35px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Get More Customers in {{city}}</h1>
+            <p class="subtitle">Your restaurant deserves better visibility online</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <p class="greeting">{{#if firstName}}Hi {{firstName}},{{else}}Hello,{{/if}}</p>
+
+            <p class="main-text">
+                I came across {{company}} while researching restaurants in {{city}}, and I wanted to reach out about something important.
+            </p>
+
+            <p class="main-text">
+                Most restaurant owners don't realize how much money they're leaving on the table with their online presence. You could be getting 30-50% more customers just by optimizing how you show up online.
+            </p>
+
+            <div class="current-status">
+                <div class="rating-display">{{rating}}⭐ on Google</div>
+                <p>
+                    Your current rating puts you in a good position, but here's the reality: <strong>potential customers compare multiple options</strong> before deciding. The restaurant with the best online presence wins, even if the food is similar.
+                </p>
+            </div>
+
+            <div class="opportunity-box">
+                <h3>The Opportunity Most Restaurants Miss:</h3>
+
+                <div class="stat-row">
+                    <span class="label">Higher Google ranking</span>
+                    <span class="value">= 2-3x more visibility</span>
+                </div>
+
+                <div class="stat-row">
+                    <span class="label">More quality reviews</span>
+                    <span class="value">= Higher conversion rate</span>
+                </div>
+
+                <div class="stat-row">
+                    <span class="label">Better GMB optimization</span>
+                    <span class="value">= More walk-ins & reservations</span>
+                </div>
+
+                <p style="margin-top: 15px; font-weight: 600; color: #065f46;">
+                    Bottom line: Your competitors who master this get first pick of customers searching for restaurants in {{city}}.
+                </p>
+            </div>
+
+            <p class="main-text">
+                <strong>That's where I come in.</strong> I specialize in helping restaurants dominate their local market through two core services:
+            </p>
+
+            <div class="solution-box">
+                <h2>How I Help Restaurants Win Online:</h2>
+
+                <div class="service">
+                    <h3>🎯 Strategic Reputation Management</h3>
+                    <p>
+                        I help you consistently generate high-quality reviews from your best customers. This isn't about fake reviews - it's about building a systematic process that showcases the quality you already deliver. More reviews = more trust = more customers.
+                    </p>
+                </div>
+
+                <div class="service">
+                    <h3>🚀 Local SEO & Google My Business Optimization</h3>
+                    <p>
+                        I optimize your Google My Business listing to rank at the TOP of local searches in {{city}}. When people search "restaurants near me" or "best restaurant in {{city}}", you show up first. More visibility = more reservations.
+                    </p>
+                </div>
+
+                <h3 style="color: #1f2937; margin-top: 25px; font-size: 17px;">What You Get:</h3>
+                <ul class="results-list">
+                    <li>Consistent growth in positive reviews (authentic, not fake)</li>
+                    <li>Higher star rating over time (typically 0.3-0.7 stars in 60-90 days)</li>
+                    <li>Top 3 ranking for "restaurants near me" searches in {{city}}</li>
+                    <li>Optimized Google listing that converts browsers into customers</li>
+                    <li>Professional response strategy for all reviews (good and bad)</li>
+                    <li>Monthly reporting so you can see the impact</li>
+                </ul>
+            </div>
+
+            <div class="proof-section">
+                <p class="quote">
+                    "We started working together when we had a decent rating but weren't standing out. Within 3 months, our visibility doubled, we climbed to the #1 spot for our category in local search, and our revenue increased by 68%. Now we're booked solid on weekends and need reservations for weeknights too."
+                </p>
+                <p class="author">— Restaurant Owner in similar market</p>
+                <p class="result">Result: Went from "another option" to "the first choice"</p>
+            </div>
+
+            <p class="main-text">
+                <strong>Here's the truth:</strong> Your food might be amazing, but if people can't find you easily or your competitor looks more trustworthy online, you're losing customers before they ever walk through your door.
+            </p>
+
+            <p class="main-text">
+                The restaurants that dominate {{city}} aren't necessarily the best - they're just the best at looking like the obvious choice online. And that's completely fixable.
+            </p>
+
+            <div class="button-container">
+                <a href="mailto:{{senderEmail}}?subject=Grow {{company}}'s Online Presence&body=Hi, I'm interested in getting more customers and improving our online visibility.%0D%0A%0D%0ACurrent rating: {{rating}} stars%0D%0AReviews: {{reviews}}%0D%0A%0D%0ABest time to call:%0D%0APhone: {{phone}}" class="cta-button">
+                    Let's Grow Your Restaurant →
+                </a>
+            </div>
+
+            <p class="main-text" style="text-align: center; font-size: 14px; color: #6b7280; margin-top: 20px;">
+                <strong>📍 Limited Availability:</strong> I work with a maximum of 3 restaurants per month<br>
+                to ensure I can deliver real results. Reply now to secure your spot.
+            </p>
+
+            <p class="main-text" style="margin-top: 30px; font-size: 15px;">
+                <strong>Here's What Happens Next:</strong><br>
+                1️⃣ Quick 15-min call to analyze your current situation<br>
+                2️⃣ I'll map out a custom strategy for {{company}}<br>
+                3️⃣ You'll see measurable growth within 30 days<br>
+                4️⃣ Watch your reservations and revenue increase month over month
+            </p>
+
+            <p class="main-text" style="margin-top: 25px;">
+                Every day you wait is another day of potential customers choosing your competitor instead. Let's change that.
+            </p>
+
+            <p class="main-text" style="margin-top: 20px;">
+                Ready to get started?<br>
+                <strong>{{#if senderName}}{{senderName}}{{else}}Your Growth Partner{{/if}}</strong>
+            </p>
+
+            <p class="main-text" style="margin-top: 15px; font-size: 14px; color: #6b7280;">
+                P.S. - I took a look at your Google My Business listing (<a href="{{mapsLink}}" style="color: #2563eb;">view here</a>). I already spotted 4-5 quick wins I can implement immediately to boost your visibility. Reply and I'll walk you through them on our call.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Restaurant Growth & Local SEO Services</strong></p>
+            <p>Helping restaurants get more customers through better online visibility</p>
+            <p style="margin-top: 15px;">{{senderEmail}} • {{currentDate}}</p>
+            <p style="margin-top: 15px;">
+                <a href="{{unsubscribeUrl}}" class="unsubscribe">Unsubscribe</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

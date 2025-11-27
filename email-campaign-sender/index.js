@@ -46,12 +46,47 @@ class EmailCampaignSender {
       .option('--campaign <id>', 'Campaign identifier for tracking', `campaign_${Date.now()}`)
       .option('--contacts <paths...>', 'Path(s) to CSV file(s) - can specify multiple files', [config.paths.defaultContacts])
       .option('--template <path>', 'Path to HTML template', config.paths.defaultTemplate)
+      .option('--auto-template', 'Auto-select template based on rating (reputation-management for <4.0, reputation-growth for 4.0+)', false)
+      .option('--rating-threshold <number>', 'Rating threshold for template selection (default: 4.0)', (value) => parseFloat(value), 4.0)
       .option('--dry-run', 'Preview only, don\'t send emails', false)
       .option('--preview', 'Show rendered HTML for first contact', false)
       .option('--resume', 'Resume from last checkpoint', false);
 
     this.program.parse();
     return this.program.opts();
+  }
+
+  /**
+   * Selects appropriate template based on rating
+   */
+  selectTemplateByRating(rating, options) {
+    if (!options.autoTemplate) {
+      // If auto-template is disabled, use the specified template
+      return options.template;
+    }
+
+    // Parse rating value
+    const ratingValue = parseFloat(rating);
+
+    // If rating is invalid or not provided, use default template
+    if (isNaN(ratingValue)) {
+      console.log(chalk.yellow(`  ⚠ Invalid rating "${rating}", using default template`));
+      return options.template;
+    }
+
+    // Select template based on rating threshold
+    const threshold = options.ratingThreshold || 4.0;
+    const templatesDir = config.paths.templates;
+
+    if (ratingValue < threshold) {
+      // Low rating: use reputation-management template (damage control)
+      const template = `${templatesDir}/reputation-management.html`;
+      return template;
+    } else {
+      // High rating: use reputation-growth template (growth/dominance)
+      const template = `${templatesDir}/reputation-growth.html`;
+      return template;
+    }
   }
 
   /**
@@ -154,7 +189,15 @@ class EmailCampaignSender {
     console.log(chalk.white('─'.repeat(50)));
     console.log(chalk.white(`Mode:          ${options.mode === 'test' ? chalk.yellow('TEST') : chalk.green('LIVE')}`));
     console.log(chalk.white(`Campaign ID:   ${options.campaign}`));
-    console.log(chalk.white(`Template:      ${options.template}`));
+
+    if (options.autoTemplate) {
+      console.log(chalk.cyan(`Template:      ${chalk.bold('AUTO-SELECT')} (rating-based)`));
+      console.log(chalk.white(`  ├─ < ${options.ratingThreshold}⭐: reputation-management.html`));
+      console.log(chalk.white(`  └─ ≥ ${options.ratingThreshold}⭐: reputation-growth.html`));
+    } else {
+      console.log(chalk.white(`Template:      ${options.template}`));
+    }
+
     console.log(chalk.white(`Contacts:      ${contacts.length}`));
     console.log(chalk.white(`Limit:         ${options.limit}`));
     console.log(chalk.white(`Delay:         ${options.delay}ms`));
@@ -167,6 +210,20 @@ class EmailCampaignSender {
     console.log(chalk.white(`  With Phone:   ${stats.withPhone}`));
     console.log(chalk.white(`  With Website: ${stats.withWebsite}`));
     console.log(chalk.white(`  Cities:       ${stats.cities.slice(0, 5).join(', ')}${stats.cities.length > 5 ? '...' : ''}`));
+
+    // Show rating distribution if auto-template is enabled
+    if (options.autoTemplate) {
+      const ratingsLow = contacts.filter(c => parseFloat(c.rating) < options.ratingThreshold).length;
+      const ratingsHigh = contacts.filter(c => parseFloat(c.rating) >= options.ratingThreshold).length;
+      const ratingsInvalid = contacts.filter(c => !c.rating || isNaN(parseFloat(c.rating))).length;
+
+      console.log(chalk.white(`\n📊 Template Distribution:`));
+      console.log(chalk.white(`  reputation-management: ${ratingsLow} contacts (< ${options.ratingThreshold}⭐)`));
+      console.log(chalk.white(`  reputation-growth:     ${ratingsHigh} contacts (≥ ${options.ratingThreshold}⭐)`));
+      if (ratingsInvalid > 0) {
+        console.log(chalk.yellow(`  ⚠ Invalid ratings:      ${ratingsInvalid} contacts (will use default)`));
+      }
+    }
   }
 
   /**
@@ -232,17 +289,22 @@ class EmailCampaignSender {
     // Mark as processed
     this.stats.processedEmails.add(contact.email.toLowerCase());
 
+    // Select template based on rating (if auto-template is enabled)
+    const templatePath = this.selectTemplateByRating(contact.rating, options);
+    const templateName = templatePath.split('/').pop().replace('.html', '');
+
     // Send email
     const result = await emailSender.sendToContact({
       contact,
-      templatePath: options.template,
+      templatePath: templatePath,
       campaignId: options.campaign,
       mode: options.mode,
     });
 
     if (result.success) {
       this.stats.sent++;
-      console.log(chalk.green(`  ✓ Sent to ${contact.email} (${contact.company || 'Unknown'})`));
+      const templateIndicator = options.autoTemplate ? chalk.cyan(`[${templateName}]`) : '';
+      console.log(chalk.green(`  ✓ Sent to ${contact.email} (${contact.company || 'Unknown'}) ${contact.rating}⭐ ${templateIndicator}`));
     } else {
       this.stats.failed++;
       console.log(chalk.red(`  ✗ Failed to ${contact.email}: ${result.error}`));
