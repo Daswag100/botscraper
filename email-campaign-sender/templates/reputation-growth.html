@@ -1,0 +1,371 @@
+<!-- SUBJECT: {{firstName}} - You're {{rating}}⭐... but your competitors are catching up -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{company}} - Dominate Local Search</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.7;
+            color: #1f2937;
+            background-color: #f9fafb;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+            color: #ffffff;
+            padding: 35px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+        .content {
+            padding: 35px 30px;
+        }
+        .greeting {
+            font-size: 17px;
+            color: #111827;
+            margin-bottom: 20px;
+        }
+        .main-text {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 18px;
+            line-height: 1.7;
+        }
+        .rating-callout {
+            background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+            border-left: 4px solid #2563eb;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .rating-callout .big-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: #1d4ed8;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .rating-callout .stat-label {
+            font-size: 16px;
+            color: #1e40af;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .rating-callout .stat-explanation {
+            font-size: 15px;
+            color: #1e3a8a;
+            line-height: 1.6;
+        }
+        .opportunity-box {
+            background-color: #ecfdf5;
+            border: 2px solid #10b981;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 6px;
+        }
+        .opportunity-box h3 {
+            color: #065f46;
+            font-size: 19px;
+            margin-bottom: 12px;
+        }
+        .opportunity-box p {
+            color: #047857;
+            font-size: 15px;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .opportunity-box strong {
+            color: #065f46;
+        }
+        .gap-stat {
+            background-color: #fef3c7;
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 3px solid #f59e0b;
+        }
+        .gap-stat strong {
+            color: #92400e;
+            font-size: 17px;
+        }
+        .solution-box {
+            background: #f9fafb;
+            border-left: 4px solid #7c3aed;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .solution-box h2 {
+            color: #5b21b6;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        .solution-box p {
+            color: #4c1d95;
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+        .solution-box ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 15px;
+        }
+        .solution-box li {
+            padding: 10px 0;
+            color: #5b21b6;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .solution-box li:before {
+            content: "→ ";
+            margin-right: 8px;
+            font-weight: bold;
+            color: #7c3aed;
+            font-size: 18px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 18px 45px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 25px 0;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(124, 58, 237, 0.5);
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .proof-section {
+            background-color: #f0fdf4;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 6px;
+            border-left: 4px solid #10b981;
+        }
+        .proof-section .quote {
+            font-style: italic;
+            color: #374151;
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+        .proof-section .author {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .proof-section .result {
+            color: #059669;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+        .competitive-edge {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #ef4444;
+        }
+        .competitive-edge h4 {
+            color: #991b1b;
+            font-size: 17px;
+            margin-bottom: 10px;
+        }
+        .competitive-edge p {
+            color: #7f1d1d;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .footer {
+            background-color: #f9fafb;
+            padding: 25px 30px;
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+        }
+        .footer p {
+            margin: 6px 0;
+        }
+        .unsubscribe {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        @media only screen and (max-width: 600px) {
+            .content {
+                padding: 25px 20px;
+            }
+            .rating-callout .big-number {
+                font-size: 36px;
+            }
+            .cta-button {
+                padding: 16px 35px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Time to Dominate {{city}}</h1>
+            <p class="subtitle">Your {{rating}}⭐ rating is good... but you could be the #1 choice</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <p class="greeting">{{#if firstName}}Hi {{firstName}},{{else}}Hello,{{/if}}</p>
+
+            <p class="main-text">
+                I was researching top restaurants in {{city}} and came across {{company}}'s {{rating}}⭐ rating.
+            </p>
+
+            <p class="main-text">
+                You're doing well - but here's what caught my attention: <strong>you're SO close to dominating local search, but you're leaving money on the table.</strong>
+            </p>
+
+            <div class="rating-callout">
+                <div class="big-number">{{rating}}⭐</div>
+                <div class="stat-label">Your Current Rating</div>
+                <div class="stat-explanation">
+                    You're in the "good" zone. But here's the reality: customers searching for restaurants don't stop at "good" - they pick whoever looks like the BEST option. And right now, you're getting passed over.
+                </div>
+            </div>
+
+            <div class="opportunity-box">
+                <h3>The Gap Between Good and Great:</h3>
+                <p>→ <strong>At {{rating}}⭐:</strong> You're in the consideration set, but not the first choice</p>
+                <p>→ <strong>At 4.5-4.7⭐:</strong> You're the obvious winner - the restaurant people choose without even looking at alternatives</p>
+
+                <div class="gap-stat">
+                    <strong>That 0.3-0.5 star difference = 40-60% more customers choosing you over competitors</strong>
+                </div>
+            </div>
+
+            <p class="main-text">
+                <strong>Here's what's happening right now:</strong>
+            </p>
+
+            <div class="competitive-edge">
+                <h4>⚠️ Your Competition is Catching Up</h4>
+                <p>
+                    While you're at {{rating}}⭐, other restaurants in {{city}} are actively managing their reputation, getting more reviews, and climbing past you in search rankings. Every month you stay where you are, they get closer to taking your spot.
+                </p>
+            </div>
+
+            <p class="main-text">
+                I specialize in taking restaurants from "good" to "dominant" in their local market. Not by gaming the system - by building a reputation that actually reflects the quality you're already delivering.
+            </p>
+
+            <div class="solution-box">
+                <h2>What I Do for High-Performing Restaurants:</h2>
+
+                <p><strong>1. Strategic Reputation Growth</strong><br>
+                I help you consistently generate high-quality reviews from your best customers - the system that gets 4.5-5⭐ restaurants to the top didn't happen by accident.</p>
+
+                <p><strong>2. Local SEO Dominance</strong><br>
+                I optimize your Google My Business to rank #1 for high-intent searches in {{city}}. When someone searches "best restaurant near me" or "top-rated restaurant in {{city}}", you show up first.</p>
+
+                <ul>
+                    <li>Push from {{rating}}⭐ to 4.5-4.7⭐ in 60-90 days</li>
+                    <li>Rank in the top 3 "restaurants near me" searches</li>
+                    <li>Increase review velocity (Google rewards active businesses)</li>
+                    <li>Convert more profile views into actual reservations/visits</li>
+                    <li>Build a moat against competition trying to catch you</li>
+                </ul>
+            </div>
+
+            <div class="proof-section">
+                <p class="quote">
+                    "We were stuck at 4.2 stars for over a year. Within 90 days we hit 4.6 stars, started showing up as the #1 result for our category, and our revenue jumped 89%. We're now consistently booked and had to expand our dining area."
+                </p>
+                <p class="author">— Restaurant Owner in nearby market, Started at 4.2⭐</p>
+                <p class="result">Result: From "good option" to "first choice" in their city</p>
+            </div>
+
+            <p class="main-text">
+                <strong>Think about this:</strong> You've already done the hard part - you're running a quality restaurant. But if customers can't tell the difference between you and your {{rating}}⭐ competitor down the street, they'll just pick whoever is closer or cheaper.
+            </p>
+
+            <p class="main-text">
+                The restaurants that dominate aren't necessarily better than you - they just look better online. And that's completely within your control.
+            </p>
+
+            <div class="button-container">
+                <a href="mailto:{{senderEmail}}?subject=Help Us Dominate {{city}} - {{company}}&body=Hi, we want to take our {{rating}} star rating to 4.5+ and dominate local search.%0D%0A%0D%0ACurrent rating: {{rating}} stars%0D%0AReviews: {{reviews}}%0D%0A%0D%0ABest time to call: %0D%0APhone: {{phone}}" class="cta-button">
+                    Let's Make This Happen →
+                </a>
+            </div>
+
+            <p class="main-text" style="text-align: center; font-size: 14px; color: #6b7280; margin-top: 20px;">
+                <strong>🎯 Limited Spots:</strong> I work with 3 restaurants per month max.<br>
+                Reply now to secure your spot before your competitor does.
+            </p>
+
+            <p class="main-text" style="margin-top: 30px; font-size: 15px;">
+                <strong>Next Steps:</strong><br>
+                1️⃣ 15-minute call to analyze your current position<br>
+                2️⃣ I'll show you exactly how to reach 4.5+ stars<br>
+                3️⃣ Custom strategy for {{company}} to own {{city}}<br>
+                4️⃣ Watch your reservations and revenue grow
+            </p>
+
+            <p class="main-text" style="margin-top: 25px;">
+                You're already a {{rating}}⭐ restaurant. Let's make sure everyone in {{city}} knows you're the best choice.
+            </p>
+
+            <p class="main-text" style="margin-top: 20px;">
+                Ready to dominate?<br>
+                <strong>{{#if senderName}}{{senderName}}{{else}}Your Growth Partner{{/if}}</strong>
+            </p>
+
+            <p class="main-text" style="margin-top: 15px; font-size: 14px; color: #6b7280;">
+                P.S. - I analyzed your listing at <a href="{{mapsLink}}" style="color: #2563eb;">{{mapsLink}}</a>. I can see 5 quick optimizations that would boost your visibility immediately. Let's talk.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Restaurant Growth & Local SEO</strong></p>
+            <p>Helping top restaurants dominate their local market</p>
+            <p style="margin-top: 15px;">{{senderEmail}} • {{currentDate}}</p>
+            <p style="margin-top: 15px;">
+                <a href="{{unsubscribeUrl}}" class="unsubscribe">Unsubscribe</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

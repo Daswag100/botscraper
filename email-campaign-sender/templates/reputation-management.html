@@ -1,0 +1,334 @@
+<!-- SUBJECT: {{firstName}} - Your {{rating}}⭐ rating is costing you $8,000+/month -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{company}} - Your Rating is Costing You Money</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.7;
+            color: #1f2937;
+            background-color: #f9fafb;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background: #ffffff;
+            padding: 30px 30px 20px 30px;
+            border-bottom: 3px solid #ef4444;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        .header .subtitle {
+            font-size: 15px;
+            color: #6b7280;
+        }
+        .content {
+            padding: 35px 30px;
+        }
+        .greeting {
+            font-size: 17px;
+            color: #111827;
+            margin-bottom: 20px;
+        }
+        .main-text {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 18px;
+            line-height: 1.7;
+        }
+        .stat-callout {
+            background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%);
+            border-left: 4px solid #ef4444;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .stat-callout .big-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: #dc2626;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .stat-callout .stat-label {
+            font-size: 16px;
+            color: #991b1b;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .stat-callout .stat-explanation {
+            font-size: 14px;
+            color: #7f1d1d;
+            line-height: 1.6;
+        }
+        .reality-check {
+            background-color: #fffbeb;
+            border: 2px solid #fbbf24;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 6px;
+        }
+        .reality-check h3 {
+            color: #92400e;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+        .reality-check p {
+            color: #78350f;
+            font-size: 15px;
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+        .reality-check strong {
+            color: #92400e;
+        }
+        .solution-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-left: 4px solid #2563eb;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        .solution-box h2 {
+            color: #1e40af;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        .solution-box p {
+            color: #1e3a8a;
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+        .solution-box ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 15px;
+        }
+        .solution-box li {
+            padding: 10px 0;
+            color: #1e40af;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .solution-box li:before {
+            content: "✓ ";
+            margin-right: 8px;
+            font-weight: bold;
+            color: #059669;
+            font-size: 18px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 18px 45px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 25px 0;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.5);
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .proof-section {
+            background-color: #f9fafb;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 6px;
+            border-left: 4px solid #059669;
+        }
+        .proof-section .quote {
+            font-style: italic;
+            color: #374151;
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+        .proof-section .author {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .proof-section .result {
+            color: #059669;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+        .footer {
+            background-color: #f9fafb;
+            padding: 25px 30px;
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+        }
+        .footer p {
+            margin: 6px 0;
+        }
+        .unsubscribe {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        @media only screen and (max-width: 600px) {
+            .content {
+                padding: 25px 20px;
+            }
+            .stat-callout .big-number {
+                font-size: 36px;
+            }
+            .cta-button {
+                padding: 16px 35px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>{{company}}</h1>
+            <p class="subtitle">I found something about your restaurant you need to see...</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <p class="greeting">{{#if firstName}}Hi {{firstName}},{{else}}Hello,{{/if}}</p>
+
+            <p class="main-text">
+                I was looking at restaurants in {{city}} yesterday and came across {{company}} on Google Maps.
+            </p>
+
+            <p class="main-text">
+                I noticed something that's probably costing you serious money every single day, and I had to reach out.
+            </p>
+
+            <div class="stat-callout">
+                <div class="big-number">{{rating}}⭐</div>
+                <div class="stat-label">Your Current Google Rating</div>
+                <div class="stat-explanation">
+                    Here's the problem: 87% of potential customers won't even consider a restaurant under 4.0 stars. They scroll right past and pick your competitor instead.
+                </div>
+            </div>
+
+            <div class="reality-check">
+                <h3>Let me show you the math:</h3>
+                <p>→ <strong>Average restaurant customer value:</strong> $40-60 per visit</p>
+                <p>→ <strong>Customers you're losing per day:</strong> 5-10 people who saw your {{rating}}⭐ rating and kept scrolling</p>
+                <p>→ <strong>Lost revenue per month:</strong> $6,000 - $12,000+</p>
+                <p style="margin-top: 15px; font-weight: 600; font-size: 16px; color: #92400e;">
+                    That's money walking straight into your competitors' doors every single day.
+                </p>
+            </div>
+
+            <p class="main-text">
+                <strong>But here's the good news:</strong> This is completely fixable, and faster than you think.
+            </p>
+
+            <p class="main-text">
+                I specialize in helping restaurants like yours fix their online reputation and dominate local search in {{city}}. Two services that work together:
+            </p>
+
+            <div class="solution-box">
+                <h2>What I Do:</h2>
+                <p><strong>1. Reputation Management</strong><br>
+                I help you get quality, authentic reviews from real customers that boost your rating and build trust. No fake reviews - just a proven system to get your happy customers to actually leave reviews.</p>
+
+                <p><strong>2. Local SEO & Google My Business Optimization</strong><br>
+                I get your restaurant ranking at the TOP of Google searches in {{city}}. More visibility = more customers walking through your door.</p>
+
+                <ul>
+                    <li>Get your rating from {{rating}}⭐ to 4.2-4.5+ stars in 60-90 days</li>
+                    <li>Rank on the first page of "restaurants near me" searches</li>
+                    <li>Turn negative reviews into opportunities to show you care</li>
+                    <li>Optimize your Google My Business listing to convert browsers into customers</li>
+                </ul>
+            </div>
+
+            <div class="proof-section">
+                <p class="quote">
+                    "We were at 3.4 stars and struggling. Within 8 weeks we hit 4.3 stars, started ranking #2 for 'best restaurant in [city]', and had to hire 3 new staff to handle the increase in customers. Our weekend bookings are now 100% full."
+                </p>
+                <p class="author">— Restaurant Owner in {{city}} area, Similar Starting Rating</p>
+                <p class="result">Result: +127% revenue increase in 90 days</p>
+            </div>
+
+            <p class="main-text">
+                <strong>Your competitors are already doing this.</strong> Every day you wait, you're losing customers to restaurants that have figured out the online reputation game.
+            </p>
+
+            <p class="main-text">
+                The process is simple, ethical, and focuses on getting real results from real customers. Google rewards this, and so do hungry people searching for places to eat.
+            </p>
+
+            <div class="button-container">
+                <a href="mailto:{{senderEmail}}?subject=Fix Our {{rating}} Star Rating - {{company}}&body=Hi, I'm interested in improving our rating and getting more customers.%0D%0A%0D%0ACurrent rating: {{rating}} stars%0D%0AReviews: {{reviews}}%0D%0A%0D%0ABest time to call: %0D%0APhone: {{phone}}" class="cta-button">
+                    Yes, Let's Fix This →
+                </a>
+            </div>
+
+            <p class="main-text" style="text-align: center; font-size: 14px; color: #6b7280; margin-top: 20px;">
+                <strong>⏰ I only take 3 new clients per month</strong> to ensure I can deliver results.<br>
+                Reply now to grab one of this month's spots.
+            </p>
+
+            <p class="main-text" style="margin-top: 30px; font-size: 15px;">
+                <strong>Here's what happens next:</strong><br>
+                1️⃣ Quick 15-min call to review your specific situation<br>
+                2️⃣ I'll create a custom game plan for {{company}}<br>
+                3️⃣ You'll see rating improvements within 30 days<br>
+                4️⃣ Watch your customer count (and revenue) grow
+            </p>
+
+            <p class="main-text" style="margin-top: 25px;">
+                Every day you stay at {{rating}} stars is another $200-400 walking out the door. Let's fix this.
+            </p>
+
+            <p class="main-text" style="margin-top: 20px;">
+                Talk soon,<br>
+                <strong>{{#if senderName}}{{senderName}}{{else}}Your Partner in Growth{{/if}}</strong>
+            </p>
+
+            <p class="main-text" style="margin-top: 15px; font-size: 14px; color: #6b7280;">
+                P.S. - I checked your Google My Business listing at <a href="{{mapsLink}}" style="color: #2563eb;">{{mapsLink}}</a>. I already have 3-4 quick wins I can implement for you immediately. Reply and I'll share them on our call.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Restaurant Reputation Management & Local SEO</strong></p>
+            <p>Helping restaurants dominate local search in {{city}}</p>
+            <p style="margin-top: 15px;">{{senderEmail}} • {{currentDate}}</p>
+            <p style="margin-top: 15px;">
+                <a href="{{unsubscribeUrl}}" class="unsubscribe">Unsubscribe</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

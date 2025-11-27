@@ -291,6 +291,143 @@ class ServiceBusinessLeadScraper {
     }
   }
 
+  // Extract reviews from the business details panel
+  async extractReviewsFromBusiness(maxReviews = 10) {
+    try {
+      console.log(`   📝 Extracting reviews...`);
+
+      // Try to find and click the reviews tab/section
+      const reviewsTabClicked = await this.page.evaluate(() => {
+        const reviewsTabSelectors = [
+          'button[aria-label*="Reviews"]',
+          'button[data-tab-index="1"]',
+          '[role="tab"][aria-label*="Reviews"]',
+          'button:has-text("Reviews")',
+        ];
+
+        for (const selector of reviewsTabSelectors) {
+          try {
+            const element = document.querySelector(selector);
+            if (element) {
+              element.click();
+              return true;
+            }
+          } catch (e) {
+            continue;
+          }
+        }
+        return false;
+      });
+
+      if (reviewsTabClicked) {
+        console.log(`   ✅ Clicked on reviews tab`);
+        await this.waitFor(2000);
+      }
+
+      // Scroll through reviews to load more
+      let scrollAttempts = 0;
+      const maxScrollAttempts = 3;
+
+      while (scrollAttempts < maxScrollAttempts) {
+        const scrolled = await this.page.evaluate(() => {
+          const reviewsContainer = document.querySelector('[role="main"]');
+          if (reviewsContainer) {
+            const scrollableElements = reviewsContainer.querySelectorAll('div[class*="scroll"]');
+            for (const el of scrollableElements) {
+              if (el.scrollHeight > el.clientHeight) {
+                const beforeScroll = el.scrollTop;
+                el.scrollTop += 500;
+                return el.scrollTop > beforeScroll;
+              }
+            }
+          }
+          return false;
+        });
+
+        if (!scrolled) break;
+        scrollAttempts++;
+        await this.waitFor(1000);
+      }
+
+      // Extract review data
+      const reviews = await this.page.evaluate((maxReviews) => {
+        const reviewElements = document.querySelectorAll('[data-review-id], div[class*="review" i][jslog], div[aria-label*="review" i]');
+        const extractedReviews = [];
+
+        for (let i = 0; i < Math.min(reviewElements.length, maxReviews); i++) {
+          const reviewEl = reviewElements[i];
+
+          try {
+            // Extract reviewer name
+            const nameEl = reviewEl.querySelector('[class*="name" i], [class*="author" i], div[class*="fontBodyMedium"]');
+            const reviewerName = nameEl ? nameEl.textContent.trim() : 'Anonymous';
+
+            // Extract rating
+            let rating = null;
+            const ratingEl = reviewEl.querySelector('[aria-label*="star"], [role="img"][aria-label*="star"]');
+            if (ratingEl) {
+              const ariaLabel = ratingEl.getAttribute('aria-label');
+              const ratingMatch = ariaLabel.match(/(\d+)\s*star/i);
+              if (ratingMatch) {
+                rating = parseInt(ratingMatch[1]);
+              }
+            }
+
+            // Extract review text
+            let reviewText = '';
+            const textEl = reviewEl.querySelector('[class*="review-text" i], span[class*="fontBodyMedium"], [jslog*="review"]');
+            if (textEl) {
+              reviewText = textEl.textContent.trim();
+            }
+
+            // If no specific review text element found, try to get text from the review container
+            if (!reviewText) {
+              const allText = reviewEl.textContent || '';
+              // Try to extract meaningful text (skip short metadata)
+              const lines = allText.split('\n').filter(line => line.trim().length > 20);
+              if (lines.length > 0) {
+                reviewText = lines[0].trim();
+              }
+            }
+
+            // Extract date
+            let date = '';
+            const dateEl = reviewEl.querySelector('[class*="date" i], [class*="time" i]');
+            if (dateEl) {
+              date = dateEl.textContent.trim();
+            }
+
+            // Only add review if we have at least some data
+            if (reviewerName || reviewText || rating) {
+              extractedReviews.push({
+                reviewerName: reviewerName || 'Anonymous',
+                rating: rating,
+                reviewText: reviewText || '',
+                date: date || ''
+              });
+            }
+          } catch (error) {
+            console.log('Error extracting individual review:', error);
+          }
+        }
+
+        return extractedReviews;
+      }, maxReviews);
+
+      console.log(`   ✅ Extracted ${reviews.length} reviews`);
+
+      // Log sample of reviews for debugging
+      if (reviews.length > 0) {
+        console.log(`   📝 Sample review: "${reviews[0].reviewText.substring(0, 100)}..." - ${reviews[0].rating}⭐ by ${reviews[0].reviewerName}`);
+      }
+
+      return reviews;
+    } catch (error) {
+      console.log(`   ⚠️  Error extracting reviews: ${error.message}`);
+      return [];
+    }
+  }
+
   async init() {
     this.browser = await puppeteer.launch({
       headless: false, // Keep false to monitor progress
@@ -775,6 +912,19 @@ class ServiceBusinessLeadScraper {
                   console.log(`   📞 Phone: ${businessInfo.phone || 'Not found'}`);
                   console.log(`   📍 Address: ${businessInfo.address || 'Not found'}`);
 
+                  // NEW: Extract reviews from the business
+                  console.log(`\n   ⭐ Extracting reviews for reputation management...`);
+                  const reviews = await this.extractReviewsFromBusiness(10);
+                  businessInfo.reviews = reviews;
+
+                  // Analyze reviews for negative sentiment
+                  const negativeReviews = reviews.filter(r => r.rating && r.rating <= 3);
+                  const avgReviewRating = reviews.length > 0
+                    ? (reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.filter(r => r.rating).length).toFixed(1)
+                    : 'N/A';
+
+                  console.log(`   📊 Reviews: ${reviews.length} total, ${negativeReviews.length} need addressing (${avgReviewRating}⭐ avg)`);
+
                   // NEW: Extract email if website exists and email extraction is enabled
                   let email = null;
                   if (extractEmails && businessInfo.website) {
@@ -1012,7 +1162,7 @@ class ServiceBusinessLeadScraper {
     }
   }
 
-  // NEW: Export businesses to CSV with email column
+  // NEW: Export businesses to CSV with email column and review summary
   exportToCSV(businesses, filename = 'businesses_with_emails.csv') {
     if (!businesses || businesses.length === 0) {
       console.log('⚠️  No businesses to export');
@@ -1031,11 +1181,20 @@ class ServiceBusinessLeadScraper {
       'Service Type',
       'Search Location',
       'Google Maps URL',
+      'Reviews Extracted',
+      'Negative Reviews Count',
+      'Sample Negative Review',
       'Extracted At'
     ];
 
     // Convert businesses to CSV rows
     const rows = businesses.map(business => {
+      const reviews = business.reviews || [];
+      const negativeReviews = reviews.filter(r => r.rating && r.rating <= 3);
+      const sampleNegative = negativeReviews.length > 0
+        ? negativeReviews[0].reviewText.substring(0, 200)
+        : '';
+
       return [
         `"${(business.name || '').replace(/"/g, '""')}"`,
         business.rating || '',
@@ -1047,6 +1206,9 @@ class ServiceBusinessLeadScraper {
         business.serviceType || '',
         business.searchLocation || '',
         business.googleMapsUrl || '',
+        reviews.length || 0,
+        negativeReviews.length || 0,
+        `"${sampleNegative.replace(/"/g, '""')}"`,
         business.extractedAt || ''
       ].join(',');
     });
@@ -1065,6 +1227,7 @@ class ServiceBusinessLeadScraper {
       console.log(`\n📁 CSV file saved: ${filepath}`);
       console.log(`📊 Total records: ${businesses.length}`);
       console.log(`📧 Records with emails: ${businesses.filter(b => b.email).length}`);
+      console.log(`⭐ Records with reviews: ${businesses.filter(b => b.reviews && b.reviews.length > 0).length}`);
     } catch (error) {
       console.error(`❌ Error saving CSV: ${error.message}`);
     }
@@ -1144,22 +1307,22 @@ async function testSingleService() {
   try {
     await scraper.init();
 
-    // NEW: Using enhanced method with email extraction and scrolling
+    // NEW: Using enhanced method with email extraction, review scraping, and scrolling for restaurants
     const businesses = await scraper.getBusinessesInAreaExpanded(
-      'plumbers',
-      'Phoenix',
-      'Arizona',
+      'restaurants',
+      'Manchester',
+      'UK',
       {
-        minReviews: 2,
-        maxBusinesses: 10, // Increased to allow finding more leads
-        minStars: 2.0, // Focus on 2.0-3.9 star range
+        minReviews: 5,
+        maxBusinesses: 5, // Start with 5 to test
+        minStars: 2.0, // Focus on 2.0-3.9 star range for reputation management
         maxStars: 3.9,
-        extractEmails: false, // Disable email extraction for faster testing
-        maxScrolls: 15 // Increased scroll attempts to find lower-rated businesses
+        extractEmails: true, // ENABLED: Extract emails for outreach
+        maxScrolls: 20 // Increased scroll attempts to find lower-rated businesses with reviews
       }
     );
 
-    console.log(`\n🎉 FINAL RESULTS: Found ${businesses.length} businesses with 2.0-3.9 star ratings:`);
+    console.log(`\n🎉 FINAL RESULTS: Found ${businesses.length} restaurants with 2.0-3.9 star ratings:`);
 
     if (businesses.length > 0) {
       businesses.forEach((business, i) => {
@@ -1169,22 +1332,29 @@ async function testSingleService() {
         console.log(`   📞 Phone: ${business.phone || 'Not found'}`);
         console.log(`   🌐 Website: ${business.website || 'Not found'}`);
         console.log(`   📧 Email: ${business.email || 'Not found'}`);
-        console.log(`   💡 Outreach opportunity: Low rating needs reputation help!`);
+        console.log(`   📝 Reviews extracted: ${business.reviews?.length || 0}`);
+        if (business.reviews && business.reviews.length > 0) {
+          const negativeReviews = business.reviews.filter(r => r.rating && r.rating <= 3);
+          console.log(`   ⚠️  Negative reviews: ${negativeReviews.length}`);
+        }
+        console.log(`   💡 Outreach opportunity: Perfect for reputation management!`);
       });
 
-      // NEW: Export to CSV with email column
+      // NEW: Export to CSV with email and review columns
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
-      const csvFilename = `plumbers_phoenix_${timestamp}.csv`;
-      const jsonFilename = `plumbers_phoenix_${timestamp}.json`;
+      const csvFilename = `restaurants_manchester_${timestamp}.csv`;
+      const jsonFilename = `restaurants_manchester_${timestamp}.json`;
 
       scraper.exportToCSV(businesses, csvFilename);
       scraper.exportToJSON(businesses, jsonFilename);
 
       console.log(`\n✅ Results exported successfully!`);
+      console.log(`\n📧 Next step: Import the CSV into the email campaign sender`);
+      console.log(`   Use template: reputation-management.html`);
 
     } else {
-      console.log('\n📝 No businesses found with 2-3.9 star ratings.');
-      console.log('💡 Try a different city or service type, or lower the minReviews requirement.');
+      console.log('\n📝 No restaurants found with 2.0-3.9 star ratings.');
+      console.log('💡 Try a different city or lower the minReviews requirement.');
     }
 
   } catch (error) {

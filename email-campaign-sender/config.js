@@ -57,7 +57,7 @@ const config = {
     trade: ['Business Type', 'Type', 'Category', 'Industry'],
     rating: ['Rating', 'Google Rating', 'Stars'],
     reviews: ['Reviews', 'Review Count', 'Number of Reviews'],
-    mapsLink: ['Google Maps Link', 'Maps Link', 'Map URL', 'Google Maps URL'],
+    mapsLink: ['Google Maps Link', 'Maps Link', 'Map URL', 'Google Maps URL', 'googleMapsLink'],
   },
 
   // Checkpoint Settings
