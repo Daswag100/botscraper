@@ -528,7 +528,7 @@
         const templates = await res.json();
         const select = document.getElementById('templateSelect');
         select.innerHTML = templates.map(t =>
-          `<option value="${t.name}">${t.name}</option>`
+          `<option value="${t.filename}" data-type="${t.type}">${t.name} (${t.type})</option>`
         ).join('');
       } catch (err) {
         showAlert('Failed to load templates', 'error');
@@ -653,7 +653,14 @@
         document.getElementById('previewSubject').textContent = data.subject;
 
         const iframe = document.getElementById('previewFrame');
-        iframe.srcdoc = data.html;
+
+        // Handle plain text vs HTML preview
+        if (data.isPlainText) {
+          // Display plain text in a readable format
+          iframe.srcdoc = `<html><head><style>body{font-family:monospace;white-space:pre-wrap;padding:20px;background:#f9fafb;color:#333;}</style></head><body>${data.text}</body></html>`;
+        } else {
+          iframe.srcdoc = data.html;
+        }
       } catch (err) {
         showAlert('Failed to load preview', 'error');
       }
