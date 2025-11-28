@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unsubscribe</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      width: 100%;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    .icon.loading {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    h1 {
+      color: #333;
+      font-size: 28px;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    p {
+      color: #666;
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .email {
+      background: #f7f7f7;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      color: #333;
+      margin: 20px 0;
+      word-break: break-all;
+    }
+
+    .button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .success {
+      color: #10b981;
+    }
+
+    .error {
+      color: #ef4444;
+    }
+
+    .link {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .link:hover {
+      text-decoration: underline;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .loading-spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Loading State -->
+    <div id="loadingState" class="hidden">
+      <div class="icon loading">⏳</div>
+      <h1>Processing...</h1>
+      <p>Please wait while we process your request.</p>
+      <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Confirm State -->
+    <div id="confirmState">
+      <div class="icon">📧</div>
+      <h1>Unsubscribe from Emails</h1>
+      <p>We're sorry to see you go. Click the button below to unsubscribe from all future emails.</p>
+      <div class="email" id="emailDisplay"></div>
+      <button class="button" onclick="confirmUnsubscribe()">Unsubscribe</button>
+    </div>
+
+    <!-- Success State -->
+    <div id="successState" class="hidden">
+      <div class="icon success">✓</div>
+      <h1>Successfully Unsubscribed</h1>
+      <p>You have been removed from our mailing list.</p>
+      <div class="email" id="successEmail"></div>
+      <p>You will no longer receive emails from us. If you change your mind, please contact us directly.</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="hidden">
+      <div class="icon error">✗</div>
+      <h1>Oops! Something Went Wrong</h1>
+      <p id="errorMessage">Unable to process your unsubscribe request. Please try again or contact us directly.</p>
+      <button class="button" onclick="location.reload()">Try Again</button>
+    </div>
+
+    <!-- Invalid Token State -->
+    <div id="invalidState" class="hidden">
+      <div class="icon error">⚠️</div>
+      <h1>Invalid Link</h1>
+      <p>This unsubscribe link is invalid or has expired. If you continue to receive unwanted emails, please contact us directly.</p>
+    </div>
+  </div>
+
+  <script>
+    // Get token from URL
+    const pathParts = window.location.pathname.split('/');
+    const token = pathParts[pathParts.length - 1];
+
+    // State management
+    let emailAddress = '';
+
+    function showState(stateName) {
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('confirmState').classList.add('hidden');
+      document.getElementById('successState').classList.add('hidden');
+      document.getElementById('errorState').classList.add('hidden');
+      document.getElementById('invalidState').classList.add('hidden');
+      document.getElementById(stateName + 'State').classList.remove('hidden');
+    }
+
+    // Load email from token on page load
+    async function loadEmail() {
+      if (!token || token === 'unsubscribe') {
+        showState('invalid');
+        return;
+      }
+
+      try {
+        showState('loading');
+        const response = await fetch(`/api/unsubscribe/${token}/info`);
+        const data = await response.json();
+
+        if (data.success && data.email) {
+          emailAddress = data.email;
+          document.getElementById('emailDisplay').textContent = emailAddress;
+          showState('confirm');
+        } else {
+          showState('invalid');
+        }
+      } catch (error) {
+        console.error('Error loading email:', error);
+        showState('invalid');
+      }
+    }
+
+    // Confirm and process unsubscribe
+    async function confirmUnsubscribe() {
+      if (!token) {
+        showState('invalid');
+        return;
+      }
+
+      try {
+        showState('loading');
+
+        const response = await fetch(`/api/unsubscribe/${token}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          document.getElementById('successEmail').textContent = data.email;
+          showState('success');
+        } else {
+          document.getElementById('errorMessage').textContent =
+            data.message || 'Unable to process your request.';
+          showState('error');
+        }
+      } catch (error) {
+        console.error('Error unsubscribing:', error);
+        document.getElementById('errorMessage').textContent =
+          'Network error. Please check your connection and try again.';
+        showState('error');
+      }
+    }
+
+    // Load email when page loads
+    loadEmail();
+  </script>
+</body>
+</html>
