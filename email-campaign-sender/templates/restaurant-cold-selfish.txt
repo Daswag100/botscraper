@@ -1,4 +1,4 @@
-SUBJECT: {{company}} - I did something for you (selfish reasons)
+{{company}} - I did something for you (selfish reasons)
 
 Hey {{company}},
 
@@ -17,7 +17,5 @@ Interested? Let me know.
 
 Talk soon,
 {{senderName}}
-{{senderEmail}}
 
----
-Not interested? Unsubscribe: {{unsubscribeLink}}
+

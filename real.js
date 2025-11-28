@@ -51,7 +51,11 @@ async function extractEmailFromWebsite(page, websiteUrl) {
 
   // Contact page paths to try in order
   const contactPaths = ['',];
+<<<<<<< Updated upstream:real.js
   const maxRetries = 1;
+=======
+  const maxRetries = 2;
+>>>>>>> Stashed changes:dallasrealtyscraper.js
 
   // Helper function to extract email from current page with improved detection
   const extractEmailFromCurrentPage = async (pageName) => {
@@ -136,7 +140,11 @@ async function extractEmailFromWebsite(page, websiteUrl) {
           }
         }
 
+<<<<<<< Updated upstream:real.js
 
+=======
+        
+>>>>>>> Stashed changes:dallasrealtyscraper.js
         return null;
       });
 
