@@ -122,7 +122,17 @@ class EmailSender {
    * @returns {string} Content without subject line
    */
   removeSubjectLine(content) {
-    return content.replace(/^SUBJECT:\s*.+?\n\n?/im, '').trim();
+    // Split into lines
+    const lines = content.split('\n');
+
+    // If first line starts with SUBJECT:, skip it and the blank line after
+    if (lines[0] && lines[0].trim().startsWith('SUBJECT:')) {
+      // Return lines starting from index 2 (skips line 0=SUBJECT, line 1=blank)
+      return lines.slice(2).join('\n').trim();
+    }
+
+    // If no SUBJECT line, return content as-is
+    return content.trim();
   }
 
   /**
