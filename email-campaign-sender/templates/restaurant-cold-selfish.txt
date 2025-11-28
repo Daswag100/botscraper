@@ -1,4 +1,4 @@
-{{company}} - I did something for you (selfish reasons)
+SUBJECT: {{company}} - I did something for you
 
 Hey {{company}},
 
@@ -18,4 +18,4 @@ Interested? Let me know.
 Talk soon,
 {{senderName}}
 
-
+P.S. - Not interested? Reply "STOP"
