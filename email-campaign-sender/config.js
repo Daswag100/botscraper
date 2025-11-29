@@ -17,7 +17,7 @@ const config = {
   gmail: {
     email: process.env.GMAIL_EMAIL,
     appPassword: process.env.GMAIL_APP_PASSWORD,
-    fromName: process.env.FROM_NAME || 'Real Estate Opportunities',
+    fromName: process.env.FROM_NAME || 'VisionAura',
     senderName: process.env.SENDER_NAME || process.env.FROM_NAME || 'Your Growth Partner',
   },
 
