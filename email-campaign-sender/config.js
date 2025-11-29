@@ -32,6 +32,7 @@ const config = {
 
   // URLs
   urls: {
+    baseUrl: process.env.BASE_URL || 'http://localhost:3000',
     unsubscribe: process.env.UNSUBSCRIBE_URL || 'mailto:youremail@gmail.com?subject=Unsubscribe',
   },
 
