@@ -50,8 +50,8 @@ const config = {
   // CSV Column Mappings
   // Maps various CSV column names to standardized field names
   csvMapping: {
-    company: ['Business Name', 'Company', 'Company Name', 'Business'],
-    email: ['Email', 'Email Address', 'E-mail', 'Contact Email'],
+    company: ['Business Name', 'Company', 'Company Name', 'Business', 'Name', 'Restaurant Name'],
+    email: ['Email', 'Email Address', 'E-mail', 'Contact Email', 'restaurant email dallas', 'email dallas', 'restaurant email', 'Emails'],
     phone: ['Phone Number', 'Phone', 'Contact Phone', 'Telephone'],
     address: ['Address', 'Street Address', 'Location Address', 'Full Address'],
     website: ['Website', 'Website URL', 'URL', 'Web'],
