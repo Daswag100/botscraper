@@ -1,21 +1,18 @@
-SUBJECT: {{company}} - I did something for you
+SUBJECT: Your Google listing has 3 problems
 
-Hey {{company}},
+Hi,
 
-I help restaurants rank higher on Google through better reviews and local SEO.
+I'm reaching out to a few Dallas restaurants this week with a simple offer:
 
-Honestly, I'm messaging you for selfish reasons - I want {{company}} as my next case study to expand my portfolio in {{city}}.
+Free 10-minute Google Business audit showing:
+→ What's hurting your rankings
+→ Why competitors show up first  
 
-I already analyzed your Google listing and found:
-- Your {{rating}}⭐ is holding you back from top spots
-- 3 quick GMB fixes that boost visibility 40-60%
-- What competitors are doing that you're not
+No pitch. No pressure. Just useful info you can act on immediately.
 
-I put together a 30-day plan to get you to 4.5+ stars.
+Want the audit? Reply "SEND IT" with your restaurant name.
 
-Interested? Let me know.
+Best,
+VisionAura
 
-Talk soon,
-{{senderName}}
-
-P.S. - Not interested? Reply "STOP"
+P.S. Not interested? Reply "STOP" and I won't reach out again.
