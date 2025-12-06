@@ -552,7 +552,7 @@
           return;
         }
 
-        tbody.innerHTML = data.contacts.slice(0, 50).map((c, i) => `
+        tbody.innerHTML = data.contacts.map((c, i) => `
           <tr>
             <td>${i + 1}</td>
             <td>${c.company || '-'}</td>
@@ -619,10 +619,7 @@
 
         showAlert('Uploaded files cleared');
         document.getElementById('csvFile').value = '';
-        document.getElementById('filesLoaded').textContent = '0';
-        document.getElementById('contactCount').textContent = '0';
-        document.getElementById('withPhone').textContent = '0';
-        document.getElementById('withWebsite').textContent = '0';
+        loadContacts(); // Refresh the contacts table with default contacts
       } catch (err) {
         showAlert('Clear failed: ' + err.message, 'error');
       }
